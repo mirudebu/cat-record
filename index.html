@@ -19,21 +19,11 @@
         .label-text { font-size: 1.1rem; font-weight: 800; color: #334155; transition: color 0.3s; white-space: nowrap; }
         .time-text { font-size: 0.75rem; font-weight: 600; color: #94a3b8; transition: color 0.3s; }
         .tag-btn { @apply px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold text-sm border-b-2 border-slate-200 active:translate-y-0.5 active:border-b-0 transition-all; }
-        #auth-overlay { position: fixed; inset: 0; background: #f1f5f9; z-index: 9999; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body class="p-4 pb-24 text-slate-800">
 
-    <div id="auth-overlay" class="hidden">
-        <div class="text-center p-8 bg-white rounded-[40px] shadow-2xl border border-slate-200 max-w-xs w-full mx-4">
-            <div class="text-4xl mb-4">🔒</div>
-            <h2 class="text-xl font-black text-slate-800 mb-6">請輸入護理密碼</h2>
-            <input type="password" id="passInput" pattern="\d*" inputmode="numeric" placeholder="****" class="w-full text-center text-2xl tracking-[1em] p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl mb-6 outline-none focus:border-slate-800 transition-all">
-            <button onclick="verifyPass()" class="w-full bg-slate-800 text-white py-4 rounded-2xl font-black tracking-widest active:scale-95 transition-all">進入系統</button>
-        </div>
-    </div>
-
-    <div id="main-content" class="max-w-2xl mx-auto space-y-6 opacity-0 transition-opacity duration-500">
+    <div id="main-content" class="max-w-2xl mx-auto space-y-6 transition-opacity duration-500">
         <div class="flex justify-between items-center px-2 mb-2">
             <div>
                 <h1 class="text-3xl font-black text-slate-800 tracking-tighter">🐾 咪咪雲端紀錄</h1>
@@ -95,10 +85,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, deleteDoc, doc, where, getDocs, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // 鎖定密碼
-        const SECRET = "0410";
-        
-        // 使用您最新的 mimi-healthy Config
+        // 使用您的 mimi-healthy Config
         const firebaseConfig = {
           apiKey: "AIzaSyB1ZbRISZunnzBapdMk-VZiYbq2PFIU7Vw",
           authDomain: "mimi-healthy.firebaseapp.com",
@@ -109,83 +96,62 @@
           measurementId: "G-V0T6833N71"
         };
 
-        window.verifyPass = () => {
-            const val = document.getElementById('passInput').value;
-            if (val === SECRET) {
-                localStorage.setItem('mimi_auth_sync', SECRET);
-                initSystem();
-            } else {
-                alert("密碼錯誤");
+        // 初始化 Firebase
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const recordsCol = collection(db, "cat_records");
+
+        // 監聽數據
+        const q = query(recordsCol, orderBy("timestamp", "desc"), limit(60));
+        onSnapshot(q, (snapshot) => {
+            const records = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+            renderUI(records);
+        }, (error) => {
+            console.error("Firebase Error:", error);
+            if(error.code === 'permission-denied') {
+                alert("權限不足！請確認 Firebase Rules 已設為 true 並發布。");
             }
+        });
+
+        // 勾選邏輯
+        window.cloudToggle = async (name) => {
+            const today = new Date().toISOString().split('T')[0];
+            const qCheck = query(recordsCol, where("date", "==", today), where("content", "==", name + " (完成)"));
+            const check = await getDocs(qCheck);
+            if (!check.empty) return;
+
+            try {
+                await addDoc(recordsCol, {
+                    date: today, 
+                    time: new Date().toTimeString().substring(0, 5),
+                    content: name + " (完成)", 
+                    type: 'med', 
+                    timestamp: Date.now()
+                });
+            } catch(e) { alert("儲存失敗"); }
         };
 
-        const initSystem = () => {
-            document.getElementById('auth-overlay').classList.add('hidden');
-            document.getElementById('main-content').classList.remove('opacity-0');
-            
-            const app = initializeApp(firebaseConfig);
-            const db = getFirestore(app);
-            const recordsCol = collection(db, "cat_records");
-
-            // 1. 監聽數據
-            const q = query(recordsCol, orderBy("timestamp", "desc"), limit(60));
-            onSnapshot(q, (snapshot) => {
-                const records = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-                renderUI(records);
-            }, (error) => {
-                console.error("Firebase Error:", error);
-                if(error.code === 'permission-denied') {
-                    alert("權限不足！請確認 Firebase Rules 已設為 true 並發布。");
-                }
-            });
-
-            // 2. 勾選邏輯
-            window.cloudToggle = async (name) => {
-                const today = new Date().toISOString().split('T')[0];
-                const qCheck = query(recordsCol, where("date", "==", today), where("content", "==", name + " (完成)"));
-                const check = await getDocs(qCheck);
-                if (!check.empty) return;
-
-                try {
-                    await addDoc(recordsCol, {
-                        date: today, 
-                        time: new Date().toTimeString().substring(0, 5),
-                        content: name + " (完成)", 
-                        type: 'med', 
-                        timestamp: Date.now()
-                    });
-                } catch(e) { alert("儲存失敗，請檢查網路或權限。"); }
-            };
-
-            window.cloudSaveSymptom = async () => {
-                const content = document.getElementById('noteInput').value.trim();
-                if (!content) return;
-                try {
-                    await addDoc(recordsCol, {
-                        date: document.getElementById('symDate').value,
-                        time: document.getElementById('symTime').value,
-                        content, type: 'symptom', timestamp: Date.now()
-                    });
-                    document.getElementById('noteInput').value = '';
-                } catch(e) { alert("儲存失敗"); }
-            };
-
-            window.del = async (id) => {
-                if (confirm("確定刪除此筆雲端紀錄？")) await deleteDoc(doc(db, "cat_records", id));
-            };
+        window.cloudSaveSymptom = async () => {
+            const content = document.getElementById('noteInput').value.trim();
+            if (!content) return;
+            try {
+                await addDoc(recordsCol, {
+                    date: document.getElementById('symDate').value,
+                    time: document.getElementById('symTime').value,
+                    content, type: 'symptom', timestamp: Date.now()
+                });
+                document.getElementById('noteInput').value = '';
+            } catch(e) { alert("儲存失敗"); }
         };
 
-        // 啟動檢查
-        if (localStorage.getItem('mimi_auth_sync') === SECRET) {
-            initSystem();
-        } else {
-            document.getElementById('auth-overlay').classList.remove('hidden');
-        }
+        window.del = async (id) => {
+            if (confirm("確定刪除？")) await deleteDoc(doc(db, "cat_records", id));
+        };
 
-        // 渲染 UI (保持之前字體大小一致的邏輯)
+        // UI 渲染
         function renderUI(records) {
             const today = new Date().toISOString().split('T')[0];
-            document.getElementById('dateBanner').innerText = "Sync Status: OK | Today: " + today;
+            document.getElementById('dateBanner').innerText = "Today: " + today;
             const todayLogs = records.filter(r => r.date === today);
             
             const M_MEDS = ['早上-💊癲癇1', '早上-💊癲癇2', '早上-🌿中藥'];
@@ -230,7 +196,7 @@
             const input = document.getElementById('noteInput');
             input.value = input.value ? input.value + '、' + tag : tag;
         };
-        window.exportToCSV = () => alert("雲端數據已安全儲存，如需匯出請從 Firebase 控制台下載。");
+        window.exportToCSV = () => alert("雲端版 CSV 匯出請至 Firebase 後台下載原始數據。");
         resetInputTime();
     </script>
 </body>
