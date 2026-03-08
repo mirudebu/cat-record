@@ -95,22 +95,24 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, deleteDoc, doc, where, getDocs, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
+        // 鎖定密碼
         const SECRET = "0410";
+        
+        // 使用您最新的 mimi-healthy Config
         const firebaseConfig = {
-            apiKey: "AIzaSyBqDlEv23EhZ-UnSgX9o2OHLUWuuy2eEuY",
-            authDomain: "mimihealth.firebaseapp.com",
-            databaseURL: "https://mimihealth-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "mimihealth",
-            storageBucket: "mimihealth.firebasestorage.app",
-            messagingSenderId: "314822263644",
-            appId: "1:314822263644:web:e12efe89b70c578a5c3799"
+          apiKey: "AIzaSyB1ZbRISZunnzBapdMk-VZiYbq2PFIU7Vw",
+          authDomain: "mimi-healthy.firebaseapp.com",
+          projectId: "mimi-healthy",
+          storageBucket: "mimi-healthy.firebasestorage.app",
+          messagingSenderId: "550078016256",
+          appId: "1:550078016256:web:35d24f96fb33a478f7a1e5",
+          measurementId: "G-V0T6833N71"
         };
 
-        // 密碼驗證邏輯
         window.verifyPass = () => {
             const val = document.getElementById('passInput').value;
             if (val === SECRET) {
-                localStorage.setItem('mimi_auth_v2', SECRET);
+                localStorage.setItem('mimi_auth_sync', SECRET);
                 initSystem();
             } else {
                 alert("密碼錯誤");
@@ -125,53 +127,65 @@
             const db = getFirestore(app);
             const recordsCol = collection(db, "cat_records");
 
-            // 即時監聽
+            // 1. 監聽數據
             const q = query(recordsCol, orderBy("timestamp", "desc"), limit(60));
             onSnapshot(q, (snapshot) => {
                 const records = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderUI(records);
+            }, (error) => {
+                console.error("Firebase Error:", error);
+                if(error.code === 'permission-denied') {
+                    alert("權限不足！請確認 Firebase Rules 已設為 true 並發布。");
+                }
             });
 
-            // 暴露到全域
+            // 2. 勾選邏輯
             window.cloudToggle = async (name) => {
                 const today = new Date().toISOString().split('T')[0];
                 const qCheck = query(recordsCol, where("date", "==", today), where("content", "==", name + " (完成)"));
                 const check = await getDocs(qCheck);
                 if (!check.empty) return;
 
-                await addDoc(recordsCol, {
-                    date: today, time: new Date().toTimeString().substring(0, 5),
-                    content: name + " (完成)", type: 'med', timestamp: Date.now()
-                });
+                try {
+                    await addDoc(recordsCol, {
+                        date: today, 
+                        time: new Date().toTimeString().substring(0, 5),
+                        content: name + " (完成)", 
+                        type: 'med', 
+                        timestamp: Date.now()
+                    });
+                } catch(e) { alert("儲存失敗，請檢查網路或權限。"); }
             };
 
             window.cloudSaveSymptom = async () => {
                 const content = document.getElementById('noteInput').value.trim();
                 if (!content) return;
-                await addDoc(recordsCol, {
-                    date: document.getElementById('symDate').value,
-                    time: document.getElementById('symTime').value,
-                    content, type: 'symptom', timestamp: Date.now()
-                });
-                document.getElementById('noteInput').value = '';
+                try {
+                    await addDoc(recordsCol, {
+                        date: document.getElementById('symDate').value,
+                        time: document.getElementById('symTime').value,
+                        content, type: 'symptom', timestamp: Date.now()
+                    });
+                    document.getElementById('noteInput').value = '';
+                } catch(e) { alert("儲存失敗"); }
             };
 
             window.del = async (id) => {
-                if (confirm("確定刪除？")) await deleteDoc(doc(db, "cat_records", id));
+                if (confirm("確定刪除此筆雲端紀錄？")) await deleteDoc(doc(db, "cat_records", id));
             };
         };
 
-        // 檢查登入狀態
-        if (localStorage.getItem('mimi_auth_v2') === SECRET) {
+        // 啟動檢查
+        if (localStorage.getItem('mimi_auth_sync') === SECRET) {
             initSystem();
         } else {
             document.getElementById('auth-overlay').classList.remove('hidden');
         }
 
-        // UI 渲染函式
+        // 渲染 UI (保持之前字體大小一致的邏輯)
         function renderUI(records) {
             const today = new Date().toISOString().split('T')[0];
-            document.getElementById('dateBanner').innerText = "Today: " + today;
+            document.getElementById('dateBanner').innerText = "Sync Status: OK | Today: " + today;
             const todayLogs = records.filter(r => r.date === today);
             
             const M_MEDS = ['早上-💊癲癇1', '早上-💊癲癇2', '早上-🌿中藥'];
@@ -181,9 +195,11 @@
                 meds.forEach((name, i) => {
                     const log = todayLogs.find(r => r.content.includes(name));
                     const btn = document.getElementById(`box-${prefix}${i}`);
-                    btn.classList.toggle('active', !!log);
-                    document.getElementById(`icon-${prefix}${i}`).innerText = log ? "✅" : "⬜";
-                    document.getElementById(`time-${prefix}${i}`).innerText = log ? log.time : "--:--";
+                    if(btn) {
+                        btn.classList.toggle('active', !!log);
+                        document.getElementById(`icon-${prefix}${i}`).innerText = log ? "✅" : "⬜";
+                        document.getElementById(`time-${prefix}${i}`).innerText = log ? log.time : "--:--";
+                    }
                 });
             };
             updateGrid(M_MEDS, 'm');
@@ -214,7 +230,7 @@
             const input = document.getElementById('noteInput');
             input.value = input.value ? input.value + '、' + tag : tag;
         };
-        window.exportToCSV = () => alert("雲端數據請由資料庫後台匯出，或點擊歷史紀錄截圖保存。");
+        window.exportToCSV = () => alert("雲端數據已安全儲存，如需匯出請從 Firebase 控制台下載。");
         resetInputTime();
     </script>
 </body>
