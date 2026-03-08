@@ -5,7 +5,7 @@
     <link rel="icon" type="image/png" href="icon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>咪咪護理雲端版</title>
+    <title>咪咪</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
@@ -28,7 +28,7 @@
     <div id="main-content" class="max-w-2xl mx-auto space-y-6 transition-opacity duration-500">
         <div class="flex justify-between items-center px-2 mb-2">
             <div>
-                <h1 class="text-3xl font-black text-slate-800 tracking-tighter">🐾 咪咪雲端紀錄</h1>
+                <h1 class="text-3xl font-black text-slate-800 tracking-tighter">🐾 咪咪健康紀錄</h1>
                 <p id="dateBanner" class="text-xs text-slate-400 font-bold tracking-[0.2em] mt-1 uppercase"></p>
             </div>
             <button onclick="exportToCSV()" class="bg-slate-800 text-white px-5 py-3 rounded-2xl shadow-lg font-black text-xs tracking-widest">匯出 CSV</button>
@@ -36,7 +36,7 @@
 
         <div class="slate-panel p-6 border-t-[10px] border-t-slate-700">
             <h2 class="text-[10px] font-black text-slate-400 tracking-[0.4em] uppercase mb-6 flex items-center">
-                <span class="w-2 h-4 bg-slate-700 rounded-full mr-3"></span> 1. Medication Schedule
+                <span class="w-2 h-4 bg-slate-700 rounded-full mr-3"></span> 🔵 Medication Schedule
             </h2>
             <div class="space-y-4">
                 <div class="flex justify-between items-center"><span class="text-xl font-black text-slate-700">☀️ 早上給藥</span><span id="prog-morning" class="text-xs font-black bg-slate-100 px-3 py-1 rounded-full text-slate-500">0/3</span></div>
@@ -60,7 +60,7 @@
 
         <div class="slate-panel p-6 border-t-[10px] border-t-slate-400">
             <h2 class="text-[10px] font-black text-slate-400 tracking-[0.4em] uppercase mb-6 flex items-center">
-                <span class="w-2 h-4 bg-slate-400 rounded-full mr-3"></span> 2. Symptom Observation
+                <span class="w-2 h-4 bg-slate-400 rounded-full mr-3"></span> 🔵 Symptom Observation
             </h2>
             <div class="flex gap-2 mb-4">
                 <input type="date" id="symDate" class="flex-[3] p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold">
@@ -203,4 +203,5 @@
     </script>
 </body>
 </html>
+
 
