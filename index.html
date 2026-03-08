@@ -17,12 +17,19 @@
             background-color: #f8fafc; 
             font-family: 'Noto Sans TC', sans-serif; 
             -webkit-tap-highlight-color: transparent;
-            padding-top: var(--safe-top); /* 適應瀏海 */
+            padding-top: var(--safe-top);
         }
-        .slate-panel { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 28px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04); }
+        /* 統一面板樣式 */
+        .slate-panel { 
+            background: #ffffff; 
+            border: 1px solid #e2e8f0; 
+            border-radius: 28px; 
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04); 
+            overflow: hidden;
+        }
         .check-item { 
             @apply flex flex-col items-center justify-center py-4 rounded-[22px] transition-all duration-300 border-2 border-slate-50 bg-white shadow-sm relative overflow-hidden; 
-            aspect-ratio: 1 / 1; /* 強制正方形更像 App 按鈕 */
+            aspect-ratio: 1 / 1;
             touch-action: manipulation; 
         }
         .check-icon-empty { @apply text-xl opacity-20 mb-1 transition-all; }
@@ -33,9 +40,11 @@
         .check-item:active { transform: scale(0.92); }
         .label-text { font-size: 0.9rem; font-weight: 800; color: #334155; white-space: nowrap; }
         .time-text { font-size: 0.65rem; font-weight: 600; color: #94a3b8; }
-        .tag-btn { @apply px-3 py-1.5 rounded-xl bg-white text-slate-700 font-bold text-xs border-2 border-slate-100 active:bg-slate-50 transition-all; }
+        
+        /* 標籤按鈕優化 */
+        .tag-btn { @apply px-3 py-2 rounded-xl bg-slate-50 text-slate-700 font-bold text-xs border border-slate-200 active:bg-slate-200 transition-all; }
         .section-title { @apply text-xl font-black text-slate-800 tracking-tight flex items-center mb-4 px-1; }
-        .observation-panel { background: #e2e8f0;border: 2px solid #cbd5e1;}
+        
         #auth-overlay { position: fixed; inset: 0; background: #f8fafc; z-index: 9999; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
@@ -53,7 +62,7 @@
 
     <div id="main-content" class="max-w-md mx-auto space-y-8 opacity-0 transition-opacity duration-700 pointer-events-none">
         
-        <div class="flex justify-between items-end px-1">
+        <div class="flex justify-between items-end px-1 pt-4">
             <div>
                 <h1 class="text-2xl font-black text-slate-800 tracking-tighter italic">MIMI HEALTH</h1>
                 <p id="dateBanner" class="text-[10px] text-slate-400 font-bold tracking-[0.2em] mt-1 uppercase"></p>
@@ -94,24 +103,28 @@
         </section>
 
         <section>
-           <div class="slate-panel p-6 border-t-[10px] border-t-slate-500 observation-panel">
-               <h2 class="text-[10px] font-black text-slate-500 tracking-[0.4em] uppercase mb-6 flex items-center">
-                <span class="w-2 h-4 bg-slate-500 rounded-full mr-3"></span> Symptom Observation
-               </h2>
-                <div class="flex gap-2 mb-3">
-                    <input type="date" id="symDate" class="flex-[3] p-3 bg-white rounded-xl font-bold text-sm focus:ring-2 ring-slate-400 outline-none transition-all">
-                    <input type="time" id="symTime" class="flex-[3] p-3 bg-white rounded-xl font-bold text-sm focus:ring-2 ring-slate-400 outline-none transition-all">
+            <div class="slate-panel p-5 border-t-[8px] border-t-slate-500">
+                <h2 class="text-[9px] font-black text-slate-500 tracking-[0.3em] uppercase mb-5 flex items-center">
+                    <span class="w-1.5 h-3 bg-slate-500 rounded-full mr-2"></span> Symptom Observation
+                </h2>
+                
+                <div class="flex gap-2 mb-4">
+                    <input type="date" id="symDate" class="flex-[3] p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-sm outline-none focus:border-slate-800 transition-all">
+                    <input type="time" id="symTime" class="flex-[3] p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-sm outline-none focus:border-slate-800 transition-all">
                     <button onclick="resetInputTime()" class="flex-1 bg-slate-800 text-white rounded-xl font-black text-[9px]">現在</button>
                 </div>
+
                 <div class="flex flex-wrap gap-1.5 mb-4">
                     <button onclick="addTag('✨ 精神好')" class="tag-btn">✨ 精神好</button>
                     <button onclick="addTag('💩 便祕')" class="tag-btn">💩 便祕</button>
                     <button onclick="addTag('🤮 嘔吐')" class="tag-btn">🤮 嘔吐</button>
                     <button onclick="addTag('🚨 癲癇發作')" class="px-3 py-1.5 rounded-xl bg-red-600 text-white font-black text-xs animate-pulse">🚨 癲癇發作</button>
                 </div>
-                <textarea id="noteInput" placeholder="描述細節..." class="w-full p-4 bg-white/60 rounded-2xl text-base mb-4 outline-none border-2 border-transparent focus:border-slate-400 h-24 transition-all placeholder:text-slate-400"></textarea>
+
+                <textarea id="noteInput" placeholder="描述細節..." class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-base mb-4 outline-none focus:border-slate-800 focus:bg-white h-24 transition-all placeholder:text-slate-400"></textarea>
+                
                 <div class="flex gap-2">
-                    <button onclick="clearInput()" class="flex-1 bg-slate-400 text-white py-4 rounded-2xl font-black active:scale-95 transition-all shadow-md">清除</button>
+                    <button onclick="clearInput()" class="flex-1 bg-slate-300 text-slate-600 py-4 rounded-2xl font-black active:scale-95 transition-all">清除</button>
                     <button onclick="cloudSaveSymptom()" class="flex-[2] bg-slate-800 text-white py-4 rounded-2xl font-black shadow-lg active:scale-95 transition-all">儲存紀錄</button>
                 </div>
             </div>
@@ -210,8 +223,8 @@
             document.getElementById('dateBanner').innerText = "Today: " + today;
             const todayLogs = records.filter(r => r.date === today);
             
-            const M_MEDS = ['早上-💊1', '早上-💊2', '早上-🌿'];
-            const N_MEDS = ['晚上-💊1', '晚上-💊2', '晚上-🌿', '晚上-🩸'];
+            const M_MEDS = ['早上-💊癲癇1', '早上-💊癲癇2', '早上-🌿中藥'];
+            const N_MEDS = ['晚上-💊癲癇1', '晚上-💊癲癇2', '晚上-🌿中藥', '晚上-🩸高血壓'];
 
             const updateGrid = (meds, prefix) => {
                 meds.forEach((name, i) => {
@@ -258,8 +271,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
