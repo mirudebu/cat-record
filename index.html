@@ -5,7 +5,7 @@
     <link rel="icon" type="image/png" href="icon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>咪咪日記</title>
+    <title>咪咪</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
@@ -23,11 +23,23 @@
         .tag-btn { @apply px-4 py-2 rounded-xl bg-white text-slate-700 font-bold text-sm border-2 border-slate-200 active:translate-y-0.5 active:border-slate-400 transition-all; }
         .section-title { @apply text-2xl font-black text-slate-800 tracking-tight flex items-center mb-4 px-2; }
         .observation-panel { background: #e2e8f0; border: 2px solid #cbd5e1; }
+        /* 登入遮罩樣式 */
+        #auth-overlay { position: fixed; inset: 0; background: #f8fafc; z-index: 9999; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s; }
     </style>
 </head>
 <body class="p-4 pb-24 text-slate-800">
 
-    <div id="main-content" class="max-w-2xl mx-auto space-y-10 transition-opacity duration-500">
+    <div id="auth-overlay">
+        <div class="text-center p-8 bg-white rounded-[40px] shadow-2xl border border-slate-200 max-w-xs w-full mx-4">
+            <div class="text-5xl mb-6">🔒</div>
+            <h2 class="text-2xl font-black text-slate-800 mb-6 tracking-tight">請輸入護理密碼</h2>
+            <input type="password" id="passInput" pattern="\d*" inputmode="numeric" placeholder="••••" 
+                class="w-full text-center text-3xl tracking-[0.5em] p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl mb-6 outline-none focus:border-slate-800 transition-all">
+            <button onclick="verifyPass()" class="w-full bg-slate-800 text-white py-5 rounded-2xl font-black tracking-widest active:scale-95 transition-all text-lg">進入系統</button>
+        </div>
+    </div>
+
+    <div id="main-content" class="max-w-2xl mx-auto space-y-10 opacity-0 transition-opacity duration-700 pointer-events-none">
         
         <div class="flex justify-between items-center px-2">
             <div>
@@ -38,14 +50,11 @@
         </div>
 
         <section>
-            
+            <h2 class="section-title"><span class="w-2 h-8 bg-slate-800 rounded-full mr-3"></span> 給藥紀錄表</h2>
             <div class="slate-panel p-6 border-t-[10px] border-t-slate-700">
-              <h2 class="text-[10px] font-black text-slate-400 tracking-[0.4em] uppercase mb-6 flex items-center">
-                <span class="w-2 h-4 bg-slate-700 rounded-full mr-3"></span> Medication Schedule
-              </h2>
                 <div class="space-y-4">
                     <div class="flex justify-between items-center">
-                        <span class="text-xl font-black text-slate-700">☀️ 早上 </span>
+                        <span class="text-xl font-black text-slate-700">☀️ 早上給藥</span>
                         <span id="prog-morning" class="text-xs font-black bg-slate-100 px-3 py-1 rounded-full text-slate-500">0/3</span>
                     </div>
                     <div class="grid grid-cols-3 gap-3">
@@ -57,7 +66,7 @@
                 <div class="h-8"></div>
                 <div class="space-y-4 pt-6 border-t-2 border-slate-50">
                     <div class="flex justify-between items-center">
-                        <span class="text-xl font-black text-slate-700">🌙 晚上 </span>
+                        <span class="text-xl font-black text-slate-700">🌙 晚上給藥</span>
                         <span id="prog-night" class="text-xs font-black bg-slate-100 px-3 py-1 rounded-full text-slate-500">0/4</span>
                     </div>
                     <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
@@ -71,11 +80,8 @@
         </section>
 
         <section>
-            
+            <h2 class="section-title"><span class="w-2 h-8 bg-slate-500 rounded-full mr-3"></span> 症狀觀察輸入</h2>
             <div class="slate-panel p-6 border-t-[10px] border-t-slate-500 observation-panel">
-               <h2 class="text-[10px] font-black text-slate-500 tracking-[0.4em] uppercase mb-6 flex items-center">
-                <span class="w-2 h-4 bg-slate-500 rounded-full mr-3"></span> Symptom Observation
-               </h2>
                 <div class="flex gap-2 mb-4">
                     <input type="date" id="symDate" class="flex-[3] p-4 bg-white border-2 border-slate-300 rounded-2xl font-bold focus:border-slate-800 outline-none">
                     <input type="time" id="symTime" class="flex-[3] p-4 bg-white border-2 border-slate-300 rounded-2xl font-bold focus:border-slate-800 outline-none">
@@ -83,7 +89,7 @@
                 </div>
                 <div class="flex flex-wrap gap-2 mb-6">
                     <button onclick="addTag('✨ 精神好')" class="tag-btn">✨ 精神好</button>
-                    <button onclick="addTag('💩 便祕')" class="tag-btn">💩 便祕</button>
+                    <button onclick="addTag('💩 便便正常')" class="tag-btn">💩 便便正常</button>
                     <button onclick="addTag('🤮 嘔吐')" class="tag-btn">🤮 嘔吐</button>
                     <button onclick="addTag('🚨 癲癇發作')" class="px-4 py-2 rounded-xl bg-red-600 text-white font-black text-sm shadow-md animate-pulse">🚨 癲癇發作</button>
                 </div>
@@ -99,11 +105,11 @@
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-10 pb-20">
             <section>
-                <h2 class="section-title text-slate-600">📖 餵藥歷程 </h2>
+                <h2 class="section-title text-slate-600">📖 給藥歷史 (雲端)</h2>
                 <div id="medList" class="space-y-3 px-1"></div>
             </section>
             <section>
-                <h2 class="section-title text-slate-600">📝 症狀觀察 </h2>
+                <h2 class="section-title text-slate-600">📝 症狀觀察 (雲端)</h2>
                 <div id="symptomList" class="space-y-3 px-1"></div>
             </section>
         </div>
@@ -112,6 +118,9 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, deleteDoc, doc, where, getDocs, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // 設定密碼
+        const SECRET = "0410";
 
         const firebaseConfig = {
           apiKey: "AIzaSyB1ZbRISZunnzBapdMk-VZiYbq2PFIU7Vw",
@@ -123,57 +132,80 @@
           measurementId: "G-V0T6833N71"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const recordsCol = collection(db, "cat_records");
-
-        const q = query(recordsCol, orderBy("timestamp", "desc"), limit(60));
-        onSnapshot(q, (snapshot) => {
-            const records = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
-            renderUI(records);
-        }, (error) => {
-            console.error("Firebase Error:", error);
-            if(error.code === 'permission-denied') alert("權限不足！請確認 Firebase Rules 為 true。");
-        });
-
-        window.cloudToggle = async (name) => {
-            const today = new Date().toISOString().split('T')[0];
-            const qCheck = query(recordsCol, where("date", "==", today), where("content", "==", name + " (完成)"));
-            const check = await getDocs(qCheck);
-            if (!check.empty) return;
-            try {
-                await addDoc(recordsCol, {
-                    date: today, time: new Date().toTimeString().substring(0, 5),
-                    content: name + " (完成)", type: 'med', timestamp: Date.now()
-                });
-            } catch(e) { alert("儲存失敗"); }
+        // 驗證邏輯
+        window.verifyPass = () => {
+            const val = document.getElementById('passInput').value;
+            if (val === SECRET) {
+                localStorage.setItem('mimi_auth_v3', SECRET);
+                startApp();
+            } else {
+                alert("密碼錯誤，請重新輸入。");
+                document.getElementById('passInput').value = '';
+            }
         };
 
-        window.cloudSaveSymptom = async () => {
-            const content = document.getElementById('noteInput').value.trim();
-            if (!content) return;
-            try {
-                await addDoc(recordsCol, {
-                    date: document.getElementById('symDate').value,
-                    time: document.getElementById('symTime').value,
-                    content, type: 'symptom', timestamp: Date.now()
-                });
-                document.getElementById('noteInput').value = '';
-            } catch(e) { alert("儲存失敗"); }
-        };
+        // 啟動主系統
+        function startApp() {
+            document.getElementById('auth-overlay').style.display = 'none';
+            const main = document.getElementById('main-content');
+            main.classList.remove('opacity-0', 'pointer-events-none');
+            
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+            const recordsCol = collection(db, "cat_records");
 
-        window.clearInput = () => {
-            if (confirm("確定清空目前文字嗎？")) document.getElementById('noteInput').value = '';
-        };
+            // 實時監聽
+            const q = query(recordsCol, orderBy("timestamp", "desc"), limit(60));
+            onSnapshot(q, (snapshot) => {
+                const records = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderUI(records, db, recordsCol);
+            }, (error) => {
+                if(error.code === 'permission-denied') alert("Firebase 規則權限不足！");
+            });
 
-        window.del = async (id) => {
-            if (confirm("確定刪除此筆紀錄？")) await deleteDoc(doc(db, "cat_records", id));
-        };
+            // 綁定全域函式
+            window.cloudToggle = async (name) => {
+                const today = new Date().toISOString().split('T')[0];
+                const qCheck = query(recordsCol, where("date", "==", today), where("content", "==", name + " (完成)"));
+                const check = await getDocs(qCheck);
+                if (!check.empty) return;
+                try {
+                    await addDoc(recordsCol, {
+                        date: today, time: new Date().toTimeString().substring(0, 5),
+                        content: name + " (完成)", type: 'med', timestamp: Date.now()
+                    });
+                } catch(e) { alert("儲存失敗"); }
+            };
 
+            window.cloudSaveSymptom = async () => {
+                const content = document.getElementById('noteInput').value.trim();
+                if (!content) return;
+                try {
+                    await addDoc(recordsCol, {
+                        date: document.getElementById('symDate').value,
+                        time: document.getElementById('symTime').value,
+                        content, type: 'symptom', timestamp: Date.now()
+                    });
+                    document.getElementById('noteInput').value = '';
+                } catch(e) { alert("儲存失敗"); }
+            };
+
+            window.del = async (id) => {
+                if (confirm("確定要刪除這筆紀錄嗎？")) await deleteDoc(doc(db, "cat_records", id));
+            };
+        }
+
+        // 自動登入檢查
+        if (localStorage.getItem('mimi_auth_v3') === SECRET) {
+            startApp();
+        }
+
+        // 渲染 UI
         function renderUI(records) {
             const today = new Date().toISOString().split('T')[0];
-            document.getElementById('dateBanner').innerText = "Update: " + new Date().toLocaleTimeString() + " | Today: " + today;
+            document.getElementById('dateBanner').innerText = "Update: OK | Today: " + today;
             const todayLogs = records.filter(r => r.date === today);
+            
             const M_MEDS = ['早上-💊癲癇1', '早上-💊癲癇2', '早上-🌿中藥'];
             const N_MEDS = ['晚上-💊癲癇1', '晚上-💊癲癇2', '晚上-🌿中藥', '晚上-🩸高血壓'];
 
@@ -198,7 +230,7 @@
                 <div class="bg-white p-5 border-l-8 ${r.content.includes('🚨') ? 'border-red-500 bg-red-50' : border} shadow-sm rounded-r-3xl relative mb-3">
                     <div class="flex justify-between items-center mb-1 text-[10px] font-black text-slate-300">
                         <span>${r.date} ${r.time}</span>
-                        <button onclick="del('${r.id}')" class="px-2 text-slate-300 hover:text-red-400 text-lg">✕</button>
+                        <button onclick="del('${r.id}')" class="px-2">✕</button>
                     </div>
                     <p class="text-slate-800 text-base font-bold leading-relaxed">${r.content}</p>
                 </div>`).join('');
@@ -212,13 +244,12 @@
             document.getElementById('symDate').value = now.toISOString().split('T')[0];
             document.getElementById('symTime').value = now.toTimeString().substring(0, 5);
         };
-        
+        window.clearInput = () => { if (confirm("清空文字？")) document.getElementById('noteInput').value = ''; };
         window.addTag = (tag) => {
             const input = document.getElementById('noteInput');
             input.value = input.value ? input.value + '、' + tag : tag;
         };
-
-        window.exportToCSV = () => alert("匯出功能請於 Firebase 後台操作。");
+        window.exportToCSV = () => alert("匯出請至 Firebase 後台。");
         resetInputTime();
     </script>
 </body>
