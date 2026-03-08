@@ -19,32 +19,28 @@
             -webkit-tap-highlight-color: transparent;
             padding-top: var(--safe-top);
         }
-        /* 統一面板樣式 */
-        .slate-panel { 
-            background: #ffffff; 
-            border: 1px solid #e2e8f0; 
-            border-radius: 28px; 
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04); 
-            overflow: hidden;
-        }
+        .slate-panel { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 28px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04); overflow: hidden; }
+        
+        /* 統一方塊排列與大小 */
         .check-item { 
-            @apply flex flex-col items-center justify-center py-4 rounded-[22px] transition-all duration-300 border-2 border-slate-50 bg-white shadow-sm relative overflow-hidden; 
+            @apply flex flex-col items-center justify-center rounded-[22px] transition-all duration-300 border-2 border-slate-50 bg-white shadow-sm relative; 
             aspect-ratio: 1 / 1;
+            padding: 0.5rem;
             touch-action: manipulation; 
         }
-        .check-icon-empty { @apply text-xl opacity-20 mb-1 transition-all; }
+        .check-icon-empty { @apply text-xl mb-1 flex items-center justify-center h-8 transition-all opacity-20; }
+        .label-text { @apply flex items-center justify-center text-center font-extrabold text-slate-700 leading-tight h-6; font-size: 0.85rem; width: 100%; }
+        .time-text { @apply flex items-center justify-center font-bold text-slate-400 h-4 mt-1; font-size: 0.65rem; }
+
+        /* 激活狀態樣式 */
         .check-item.active { @apply bg-slate-800 border-slate-700 shadow-lg scale-[0.96]; }
-        .check-item.active .label-text { @apply text-white !important; }
-        .check-item.active .time-text { @apply text-slate-400 !important; }
-        .check-item.active .check-icon-empty { @apply scale-125 opacity-100; }
+        .check-item.active .label-text { @apply text-white; }
+        .check-item.active .time-text { @apply text-slate-400; }
+        .check-item.active .check-icon-empty { @apply scale-110 opacity-100; }
         .check-item:active { transform: scale(0.92); }
-        .label-text { font-size: 0.9rem; font-weight: 800; color: #334155; white-space: nowrap; }
-        .time-text { font-size: 0.65rem; font-weight: 600; color: #94a3b8; }
-        
-        /* 標籤按鈕優化 */
-        .tag-btn { @apply px-3 py-2 rounded-xl bg-slate-50 text-slate-700 font-bold text-xs border border-slate-200 active:bg-slate-200 transition-all; }
+
+        .tag-btn { @apply px-3 py-1.5 rounded-xl bg-slate-50 text-slate-700 font-bold text-xs border-2 border-slate-100 active:bg-slate-200 transition-all; }
         .section-title { @apply text-xl font-black text-slate-800 tracking-tight flex items-center mb-4 px-1; }
-        
         #auth-overlay { position: fixed; inset: 0; background: #f8fafc; z-index: 9999; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
@@ -80,23 +76,23 @@
                         <span class="text-lg font-black text-slate-700">☀️ 早上</span>
                         <span id="prog-morning" class="text-[10px] font-black bg-slate-100 px-2 py-0.5 rounded-full text-slate-500">0/3</span>
                     </div>
-                    <div class="grid grid-cols-3 gap-2.5">
+                    <div class="grid grid-cols-3 gap-3">
                         <button onclick="cloudToggle('早上-💊癲癇1')" id="box-m0" class="check-item"><span id="icon-m0" class="check-icon-empty">⬜</span><span class="label-text">💊癲癇1</span><span id="time-m0" class="time-text">--:--</span></button>
                         <button onclick="cloudToggle('早上-💊癲癇2')" id="box-m1" class="check-item"><span id="icon-m1" class="check-icon-empty">⬜</span><span class="label-text">💊癲癇2</span><span id="time-m1" class="time-text">--:--</span></button>
                         <button onclick="cloudToggle('早上-🌿中藥')" id="box-m2" class="check-item"><span id="icon-m2" class="check-icon-empty">⬜</span><span class="label-text">🌿中藥</span><span id="time-m2" class="time-text">--:--</span></button>
                     </div>
                 </div>
-                <div class="h-6"></div>
+                <div class="h-8"></div>
                 <div class="space-y-4 pt-5 border-t border-slate-100">
                     <div class="flex justify-between items-center px-1">
                         <span class="text-lg font-black text-slate-700">🌙 晚上</span>
                         <span id="prog-night" class="text-[10px] font-black bg-slate-100 px-2 py-0.5 rounded-full text-slate-500">0/4</span>
                     </div>
                     <div class="grid grid-cols-4 gap-2">
-                        <button onclick="cloudToggle('晚上-💊癲癇1')" id="box-n0" class="check-item"><span id="icon-n0" class="check-icon-empty text-base">⬜</span><span class="label-text text-[0.75rem]">💊癲癇1</span><span id="time-n0" class="time-text text-[0.6rem]">--:--</span></button>
-                        <button onclick="cloudToggle('晚上-💊癲癇2')" id="box-n1" class="check-item"><span id="icon-n1" class="check-icon-empty text-base">⬜</span><span class="label-text text-[0.75rem]">💊癲癇2</span><span id="time-n1" class="time-text text-[0.6rem]">--:--</span></button>
-                        <button onclick="cloudToggle('晚上-🌿中藥')" id="box-n2" class="check-item"><span id="icon-n2" class="check-icon-empty text-base">⬜</span><span class="label-text text-[0.75rem]">🌿中藥</span><span id="time-n2" class="time-text text-[0.6rem]">--:--</span></button>
-                        <button onclick="cloudToggle('晚上-🩸高血壓')" id="box-n3" class="check-item"><span id="icon-n3" class="check-icon-empty text-base">⬜</span><span class="label-text text-[0.75rem]">🩸高血壓</span><span id="time-n3" class="time-text text-[0.6rem]">--:--</span></button>
+                        <button onclick="cloudToggle('晚上-💊癲癇1')" id="box-n0" class="check-item"><span id="icon-n0" class="check-icon-empty">⬜</span><span class="label-text !text-[0.7rem]">💊癲癇1</span><span id="time-n0" class="time-text">--:--</span></button>
+                        <button onclick="cloudToggle('晚上-💊癲癇2')" id="box-n1" class="check-item"><span id="icon-n1" class="check-icon-empty">⬜</span><span class="label-text !text-[0.7rem]">💊癲癇2</span><span id="time-n1" class="time-text">--:--</span></button>
+                        <button onclick="cloudToggle('晚上-🌿中藥')" id="box-n2" class="check-item"><span id="icon-n2" class="check-icon-empty">⬜</span><span class="label-text !text-[0.7rem]">🌿中藥</span><span id="time-n2" class="time-text">--:--</span></button>
+                        <button onclick="cloudToggle('晚上-🩸高血壓')" id="box-n3" class="check-item"><span id="icon-n3" class="check-icon-empty">⬜</span><span class="label-text !text-[0.7rem]">🩸高血壓</span><span id="time-n3" class="time-text">--:--</span></button>
                     </div>
                 </div>
             </div>
@@ -107,22 +103,18 @@
                 <h2 class="text-[9px] font-black text-slate-500 tracking-[0.3em] uppercase mb-5 flex items-center">
                     <span class="w-1.5 h-3 bg-slate-500 rounded-full mr-2"></span> Symptom Observation
                 </h2>
-                
                 <div class="flex gap-2 mb-4">
                     <input type="date" id="symDate" class="flex-[3] p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-sm outline-none focus:border-slate-800 transition-all">
                     <input type="time" id="symTime" class="flex-[3] p-3 bg-slate-50 border border-slate-200 rounded-xl font-bold text-sm outline-none focus:border-slate-800 transition-all">
                     <button onclick="resetInputTime()" class="flex-1 bg-slate-800 text-white rounded-xl font-black text-[9px]">現在</button>
                 </div>
-
                 <div class="flex flex-wrap gap-1.5 mb-4">
                     <button onclick="addTag('✨ 精神好')" class="tag-btn">✨ 精神好</button>
                     <button onclick="addTag('💩 便祕')" class="tag-btn">💩 便祕</button>
                     <button onclick="addTag('🤮 嘔吐')" class="tag-btn">🤮 嘔吐</button>
                     <button onclick="addTag('🚨 癲癇發作')" class="px-3 py-1.5 rounded-xl bg-red-600 text-white font-black text-xs animate-pulse">🚨 癲癇發作</button>
                 </div>
-
                 <textarea id="noteInput" placeholder="描述細節..." class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-base mb-4 outline-none focus:border-slate-800 focus:bg-white h-24 transition-all placeholder:text-slate-400"></textarea>
-                
                 <div class="flex gap-2">
                     <button onclick="clearInput()" class="flex-1 bg-slate-300 text-slate-600 py-4 rounded-2xl font-black active:scale-95 transition-all">清除</button>
                     <button onclick="cloudSaveSymptom()" class="flex-[2] bg-slate-800 text-white py-4 rounded-2xl font-black shadow-lg active:scale-95 transition-all">儲存紀錄</button>
@@ -223,6 +215,7 @@
             document.getElementById('dateBanner').innerText = "Today: " + today;
             const todayLogs = records.filter(r => r.date === today);
             
+            // 修正：必須與雲端儲存的字串完全一致
             const M_MEDS = ['早上-💊癲癇1', '早上-💊癲癇2', '早上-🌿中藥'];
             const N_MEDS = ['晚上-💊癲癇1', '晚上-💊癲癇2', '晚上-🌿中藥', '晚上-🩸高血壓'];
 
