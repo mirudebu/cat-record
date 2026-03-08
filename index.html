@@ -63,41 +63,71 @@
                 <h1 class="text-2xl font-black text-slate-800 tracking-tighter italic">MIMI HEALTH</h1>
                 <p id="dateBanner" class="text-[10px] text-slate-400 font-bold tracking-[0.2em] mt-1 uppercase"></p>
             </div>
-            <button onclick="exportToCSV()" class="bg-slate-200 text-slate-600 px-4 py-2 rounded-xl font-black text-[10px] tracking-widest">CSV</button>
+            <button onclick="exportToCSV()" class="bg-slate-200 text-slate-600 px-4 py-2 rounded-xl font-black text-[10px] tracking-widest">匯出CSV</button>
         </div>
 
         <section>
-            <div class="slate-panel p-5 border-t-[8px] border-t-slate-700">
-                <h2 class="text-[9px] font-black text-slate-400 tracking-[0.3em] uppercase mb-5 flex items-center">
-                    <span class="w-1.5 h-3 bg-slate-700 rounded-full mr-2"></span> Medication
-                </h2>
-                <div class="space-y-4">
-                    <div class="flex justify-between items-center px-1">
-                        <span class="text-lg font-black text-slate-700">☀️ 早上</span>
-                        <span id="prog-morning" class="text-[10px] font-black bg-slate-100 px-2 py-0.5 rounded-full text-slate-500">0/3</span>
-                    </div>
-                    <div class="grid grid-cols-3 gap-3">
-                        <button onclick="cloudToggle('早上-💊癲癇1')" id="box-m0" class="check-item"><span id="icon-m0" class="check-icon-empty">⬜</span><span class="label-text">💊癲癇1</span><span id="time-m0" class="time-text">--:--</span></button>
-                        <button onclick="cloudToggle('早上-💊癲癇2')" id="box-m1" class="check-item"><span id="icon-m1" class="check-icon-empty">⬜</span><span class="label-text">💊癲癇2</span><span id="time-m1" class="time-text">--:--</span></button>
-                        <button onclick="cloudToggle('早上-🌿中藥')" id="box-m2" class="check-item"><span id="icon-m2" class="check-icon-empty">⬜</span><span class="label-text">🌿中藥</span><span id="time-m2" class="time-text">--:--</span></button>
-                    </div>
+    <div class="slate-panel p-6 border-t-[10px] border-t-slate-800">
+        <h2 class="text-[11px] font-black text-slate-400 tracking-[0.2em] uppercase mb-6 flex items-center">
+            <span class="w-1.5 h-4 bg-slate-800 rounded-full mr-2"></span> Medication
+        </h2>
+
+        <div class="space-y-8">
+            <div>
+                <div class="flex justify-between items-end mb-4 px-1">
+                    <span class="text-xl font-black text-slate-800">☀️ 早上 (Morning)</span>
+                    <span id="prog-morning" class="text-[10px] font-black text-slate-400">0 / 3</span>
                 </div>
-                <div class="h-8"></div>
-                <div class="space-y-4 pt-5 border-t border-slate-100">
-                    <div class="flex justify-between items-center px-1">
-                        <span class="text-lg font-black text-slate-700">🌙 晚上</span>
-                        <span id="prog-night" class="text-[10px] font-black bg-slate-100 px-2 py-0.5 rounded-full text-slate-500">0/4</span>
-                    </div>
-                    <div class="grid grid-cols-4 gap-2">
-                        <button onclick="cloudToggle('晚上-💊癲癇1')" id="box-n0" class="check-item"><span id="icon-n0" class="check-icon-empty">⬜</span><span class="label-text !text-[0.7rem]">💊癲癇1</span><span id="time-n0" class="time-text">--:--</span></button>
-                        <button onclick="cloudToggle('晚上-💊癲癇2')" id="box-n1" class="check-item"><span id="icon-n1" class="check-icon-empty">⬜</span><span class="label-text !text-[0.7rem]">💊癲癇2</span><span id="time-n1" class="time-text">--:--</span></button>
-                        <button onclick="cloudToggle('晚上-🌿中藥')" id="box-n2" class="check-item"><span id="icon-n2" class="check-icon-empty">⬜</span><span class="label-text !text-[0.7rem]">🌿中藥</span><span id="time-n2" class="time-text">--:--</span></button>
-                        <button onclick="cloudToggle('晚上-🩸高血壓')" id="box-n3" class="check-item"><span id="icon-n3" class="check-icon-empty">⬜</span><span class="label-text !text-[0.7rem]">🩸高血壓</span><span id="time-n3" class="time-text">--:--</span></button>
-                    </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="cloudToggle('早上-💊癲癇1')" id="box-m0" class="check-item !aspect-auto py-4">
+                        <span id="icon-m0" class="check-icon-empty">⬜</span>
+                        <span class="label-text">💊 癲癇 1</span>
+                        <span id="time-m0" class="time-text">--:--</span>
+                    </button>
+                    <button onclick="cloudToggle('早上-💊癲癇2')" id="box-m1" class="check-item !aspect-auto py-4">
+                        <span id="icon-m1" class="check-icon-empty">⬜</span>
+                        <span class="label-text">💊 癲癇 2</span>
+                        <span id="time-m1" class="time-text">--:--</span>
+                    </button>
+                    <button onclick="cloudToggle('早上-🌿中藥')" id="box-m2" class="check-item !aspect-auto py-4">
+                        <span id="icon-m2" class="check-icon-empty">⬜</span>
+                        <span class="label-text">🌿 中藥</span>
+                        <span id="time-m2" class="time-text">--:--</span>
+                    </button>
+                    <div class="opacity-0 pointer-events-none"></div> </div>
+            </div>
+
+            <div class="border-t border-slate-100 pt-6">
+                <div class="flex justify-between items-end mb-4 px-1">
+                    <span class="text-xl font-black text-slate-800">🌙 晚上 (Night)</span>
+                    <span id="prog-night" class="text-[10px] font-black text-slate-400">0 / 4</span>
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="cloudToggle('晚上-💊癲癇1')" id="box-n0" class="check-item !aspect-auto py-4">
+                        <span id="icon-n0" class="check-icon-empty">⬜</span>
+                        <span class="label-text">💊 癲癇 1</span>
+                        <span id="time-n0" class="time-text">--:--</span>
+                    </button>
+                    <button onclick="cloudToggle('晚上-💊癲癇2')" id="box-n1" class="check-item !aspect-auto py-4">
+                        <span id="icon-n1" class="check-icon-empty">⬜</span>
+                        <span class="label-text">💊 癲癇 2</span>
+                        <span id="time-n1" class="time-text">--:--</span>
+                    </button>
+                    <button onclick="cloudToggle('晚上-🌿中藥')" id="box-n2" class="check-item !aspect-auto py-4">
+                        <span id="icon-n2" class="check-icon-empty">⬜</span>
+                        <span class="label-text">🌿 中藥</span>
+                        <span id="time-n2" class="time-text">--:--</span>
+                    </button>
+                    <button onclick="cloudToggle('晚上-🩸高血壓')" id="box-n3" class="check-item !aspect-auto py-4">
+                        <span id="icon-n3" class="check-icon-empty">⬜</span>
+                        <span class="label-text">🩸 高血壓</span>
+                        <span id="time-n3" class="time-text">--:--</span>
+                    </button>
                 </div>
             </div>
-        </section>
-
+        </div>
+    </div>
+</section>
         <section>
             <div class="slate-panel p-5 border-t-[8px] border-t-slate-500">
                 <h2 class="text-[9px] font-black text-slate-500 tracking-[0.3em] uppercase mb-5 flex items-center">
