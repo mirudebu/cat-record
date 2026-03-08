@@ -68,26 +68,26 @@
                 </h2>
                 <div class="space-y-4">
                     <div class="flex justify-between items-center px-1">
-                        <span class="text-lg font-black text-slate-700">☀️ 早上給藥</span>
+                        <span class="text-lg font-black text-slate-700">☀️ 早上</span>
                         <span id="prog-morning" class="text-[10px] font-black bg-slate-100 px-2 py-0.5 rounded-full text-slate-500">0/3</span>
                     </div>
                     <div class="grid grid-cols-3 gap-2.5">
-                        <button onclick="cloudToggle('早上-💊1')" id="box-m0" class="check-item"><span id="icon-m0" class="check-icon-empty">⬜</span><span class="label-text">💊癲癇1</span><span id="time-m0" class="time-text">--:--</span></button>
-                        <button onclick="cloudToggle('早上-💊2')" id="box-m1" class="check-item"><span id="icon-m1" class="check-icon-empty">⬜</span><span class="label-text">💊癲癇2</span><span id="time-m1" class="time-text">--:--</span></button>
-                        <button onclick="cloudToggle('早上-🌿')" id="box-m2" class="check-item"><span id="icon-m2" class="check-icon-empty">⬜</span><span class="label-text">🌿中藥</span><span id="time-m2" class="time-text">--:--</span></button>
+                        <button onclick="cloudToggle('早上-💊癲癇1')" id="box-m0" class="check-item"><span id="icon-m0" class="check-icon-empty">⬜</span><span class="label-text">💊癲癇1</span><span id="time-m0" class="time-text">--:--</span></button>
+                        <button onclick="cloudToggle('早上-💊癲癇2')" id="box-m1" class="check-item"><span id="icon-m1" class="check-icon-empty">⬜</span><span class="label-text">💊癲癇2</span><span id="time-m1" class="time-text">--:--</span></button>
+                        <button onclick="cloudToggle('早上-🌿中藥')" id="box-m2" class="check-item"><span id="icon-m2" class="check-icon-empty">⬜</span><span class="label-text">🌿中藥</span><span id="time-m2" class="time-text">--:--</span></button>
                     </div>
                 </div>
                 <div class="h-6"></div>
                 <div class="space-y-4 pt-5 border-t border-slate-100">
                     <div class="flex justify-between items-center px-1">
-                        <span class="text-lg font-black text-slate-700">🌙 晚上給藥</span>
+                        <span class="text-lg font-black text-slate-700">🌙 晚上</span>
                         <span id="prog-night" class="text-[10px] font-black bg-slate-100 px-2 py-0.5 rounded-full text-slate-500">0/4</span>
                     </div>
                     <div class="grid grid-cols-4 gap-2">
-                        <button onclick="cloudToggle('晚上-💊1')" id="box-n0" class="check-item"><span id="icon-n0" class="check-icon-empty text-base">⬜</span><span class="label-text text-[0.75rem]">💊1</span><span id="time-n0" class="time-text text-[0.6rem]">--:--</span></button>
-                        <button onclick="cloudToggle('晚上-💊2')" id="box-n1" class="check-item"><span id="icon-n1" class="check-icon-empty text-base">⬜</span><span class="label-text text-[0.75rem]">💊2</span><span id="time-n1" class="time-text text-[0.6rem]">--:--</span></button>
-                        <button onclick="cloudToggle('晚上-🌿')" id="box-n2" class="check-item"><span id="icon-n2" class="check-icon-empty text-base">⬜</span><span class="label-text text-[0.75rem]">🌿</span><span id="time-n2" class="time-text text-[0.6rem]">--:--</span></button>
-                        <button onclick="cloudToggle('晚上-🩸')" id="box-n3" class="check-item"><span id="icon-n3" class="check-icon-empty text-base">⬜</span><span class="label-text text-[0.75rem]">🩸</span><span id="time-n3" class="time-text text-[0.6rem]">--:--</span></button>
+                        <button onclick="cloudToggle('晚上-💊癲癇1')" id="box-n0" class="check-item"><span id="icon-n0" class="check-icon-empty text-base">⬜</span><span class="label-text text-[0.75rem]">💊癲癇1</span><span id="time-n0" class="time-text text-[0.6rem]">--:--</span></button>
+                        <button onclick="cloudToggle('晚上-💊癲癇2')" id="box-n1" class="check-item"><span id="icon-n1" class="check-icon-empty text-base">⬜</span><span class="label-text text-[0.75rem]">💊癲癇2</span><span id="time-n1" class="time-text text-[0.6rem]">--:--</span></button>
+                        <button onclick="cloudToggle('晚上-🌿中藥')" id="box-n2" class="check-item"><span id="icon-n2" class="check-icon-empty text-base">⬜</span><span class="label-text text-[0.75rem]">🌿中藥</span><span id="time-n2" class="time-text text-[0.6rem]">--:--</span></button>
+                        <button onclick="cloudToggle('晚上-🩸高血壓')" id="box-n3" class="check-item"><span id="icon-n3" class="check-icon-empty text-base">⬜</span><span class="label-text text-[0.75rem]">🩸高血壓</span><span id="time-n3" class="time-text text-[0.6rem]">--:--</span></button>
                     </div>
                 </div>
             </div>
@@ -105,9 +105,9 @@
                 </div>
                 <div class="flex flex-wrap gap-1.5 mb-4">
                     <button onclick="addTag('✨ 精神好')" class="tag-btn">✨ 精神好</button>
-                    <button onclick="addTag('💩 便便正常')" class="tag-btn">💩 便便</button>
+                    <button onclick="addTag('💩 便祕')" class="tag-btn">💩 便祕</button>
                     <button onclick="addTag('🤮 嘔吐')" class="tag-btn">🤮 嘔吐</button>
-                    <button onclick="addTag('🚨 癲癇發作')" class="px-3 py-1.5 rounded-xl bg-red-600 text-white font-black text-xs animate-pulse">🚨 發作</button>
+                    <button onclick="addTag('🚨 癲癇發作')" class="px-3 py-1.5 rounded-xl bg-red-600 text-white font-black text-xs animate-pulse">🚨 癲癇發作</button>
                 </div>
                 <textarea id="noteInput" placeholder="描述細節..." class="w-full p-4 bg-white/60 rounded-2xl text-base mb-4 outline-none border-2 border-transparent focus:border-slate-400 h-24 transition-all placeholder:text-slate-400"></textarea>
                 <div class="flex gap-2">
@@ -258,3 +258,4 @@
     </script>
 </body>
 </html>
+
