@@ -10,7 +10,7 @@
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
         body { background-color: #f1f5f9; font-family: 'Noto Sans TC', sans-serif; -webkit-tap-highlight-color: transparent; }
-        .slate-panel { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 32px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); }
+        .slate-panel { background: #ffffff; border: 1px solid #1f374f; border-radius: 32px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); }
         .check-item { @apply flex flex-col items-center justify-center py-6 rounded-3xl transition-all duration-300 border-2 border-slate-100 bg-white shadow-sm relative overflow-hidden; touch-action: manipulation; }
         .check-icon-empty { @apply text-2xl opacity-10 mb-1 transition-all; }
         .check-item.active { @apply bg-slate-800 border-slate-700 shadow-xl scale-[1.02]; }
@@ -39,7 +39,7 @@
                 <span class="w-2 h-4 bg-slate-700 rounded-full mr-3"></span> 🔵 Medication Schedule
             </h2>
             <div class="space-y-4">
-                <div class="flex justify-between items-center"><span class="text-xl font-black text-slate-700">☀️ 早上給藥</span><span id="prog-morning" class="text-xs font-black bg-slate-100 px-3 py-1 rounded-full text-slate-500">0/3</span></div>
+                <div class="flex justify-between items-center"><span class="text-xl font-black text-slate-700">☀️ 早上 </span><span id="prog-morning" class="text-xs font-black bg-slate-100 px-3 py-1 rounded-full text-slate-500">0/3</span></div>
                 <div class="grid grid-cols-3 gap-3">
                     <button onclick="cloudToggle('早上-💊癲癇1')" id="box-m0" class="check-item"><span id="icon-m0" class="check-icon-empty">⬜</span><span class="label-text">💊癲癇1</span><span id="time-m0" class="time-text">--:--</span></button>
                     <button onclick="cloudToggle('早上-💊癲癇2')" id="box-m1" class="check-item"><span id="icon-m1" class="check-icon-empty">⬜</span><span class="label-text">💊癲癇2</span><span id="time-m1" class="time-text">--:--</span></button>
@@ -48,7 +48,7 @@
             </div>
             <div class="h-8"></div>
             <div class="space-y-4 pt-6 border-t-2 border-slate-50">
-                <div class="flex justify-between items-center"><span class="text-xl font-black text-slate-700">🌙 晚上給藥</span><span id="prog-night" class="text-xs font-black bg-slate-100 px-3 py-1 rounded-full text-slate-500">0/4</span></div>
+                <div class="flex justify-between items-center"><span class="text-xl font-black text-slate-700">🌙 晚上 </span><span id="prog-night" class="text-xs font-black bg-slate-100 px-3 py-1 rounded-full text-slate-500">0/4</span></div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                     <button onclick="cloudToggle('晚上-💊癲癇1')" id="box-n0" class="check-item"><span id="icon-n0" class="check-icon-empty">⬜</span><span class="label-text">💊癲癇1</span><span id="time-n0" class="time-text">--:--</span></button>
                     <button onclick="cloudToggle('晚上-💊癲癇2')" id="box-n1" class="check-item"><span id="icon-n1" class="check-icon-empty">⬜</span><span class="label-text">💊癲癇2</span><span id="time-n1" class="time-text">--:--</span></button>
@@ -203,5 +203,6 @@
     </script>
 </body>
 </html>
+
 
 
