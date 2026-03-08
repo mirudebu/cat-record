@@ -3,242 +3,219 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>貓咪護理看板 - Slate Edition</title>
+    <title>咪咪護理雲端版</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
         body { background-color: #f1f5f9; font-family: 'Noto Sans TC', sans-serif; -webkit-tap-highlight-color: transparent; }
-        
         .slate-panel { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 32px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); }
-        
-        /* 統一勾選按鈕樣式 */
-        .check-item { 
-            @apply flex flex-col items-center justify-center py-6 rounded-3xl transition-all duration-300 border-2 border-slate-100 bg-white shadow-sm relative overflow-hidden;
-            touch-action: manipulation;
-        }
+        .check-item { @apply flex flex-col items-center justify-center py-6 rounded-3xl transition-all duration-300 border-2 border-slate-100 bg-white shadow-sm relative overflow-hidden; touch-action: manipulation; }
         .check-icon-empty { @apply text-2xl opacity-10 mb-1 transition-all; }
-        
-        /* 選中後的樣式 */
         .check-item.active { @apply bg-slate-800 border-slate-700 shadow-xl scale-[1.02]; }
         .check-item.active .label-text { @apply text-white !important; }
         .check-item.active .time-text { @apply text-slate-400 !important; }
         .check-item.active .check-icon-empty { @apply scale-150 opacity-100; }
         .check-item:active { transform: scale(0.95); }
-
-        /* 關鍵：統一字體大小 */
         .label-text { font-size: 1.1rem; font-weight: 800; color: #334155; transition: color 0.3s; white-space: nowrap; }
         .time-text { font-size: 0.75rem; font-weight: 600; color: #94a3b8; transition: color 0.3s; }
-
         .tag-btn { @apply px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold text-sm border-b-2 border-slate-200 active:translate-y-0.5 active:border-b-0 transition-all; }
+        #auth-overlay { position: fixed; inset: 0; background: #f1f5f9; z-index: 9999; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body class="p-4 pb-24 text-slate-800">
-    <div class="max-w-2xl mx-auto space-y-6">
-        
+
+    <div id="auth-overlay" class="hidden">
+        <div class="text-center p-8 bg-white rounded-[40px] shadow-2xl border border-slate-200 max-w-xs w-full mx-4">
+            <div class="text-4xl mb-4">🔒</div>
+            <h2 class="text-xl font-black text-slate-800 mb-6">請輸入護理密碼</h2>
+            <input type="password" id="passInput" pattern="\d*" inputmode="numeric" placeholder="****" class="w-full text-center text-2xl tracking-[1em] p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl mb-6 outline-none focus:border-slate-800 transition-all">
+            <button onclick="verifyPass()" class="w-full bg-slate-800 text-white py-4 rounded-2xl font-black tracking-widest active:scale-95 transition-all">進入系統</button>
+        </div>
+    </div>
+
+    <div id="main-content" class="max-w-2xl mx-auto space-y-6 opacity-0 transition-opacity duration-500">
         <div class="flex justify-between items-center px-2 mb-2">
             <div>
-                <h1 class="text-3xl font-black text-slate-800 tracking-tighter">🐾 咪咪健康紀錄</h1>
+                <h1 class="text-3xl font-black text-slate-800 tracking-tighter">🐾 咪咪雲端紀錄</h1>
                 <p id="dateBanner" class="text-xs text-slate-400 font-bold tracking-[0.2em] mt-1 uppercase"></p>
             </div>
-            <button onclick="exportToCSV()" class="bg-slate-800 text-white px-5 py-3 rounded-2xl shadow-lg active:scale-90 transition-all font-black text-xs tracking-widest">匯出 CSV</button>
+            <button onclick="exportToCSV()" class="bg-slate-800 text-white px-5 py-3 rounded-2xl shadow-lg font-black text-xs tracking-widest">匯出 CSV</button>
         </div>
 
         <div class="slate-panel p-6 border-t-[10px] border-t-slate-700">
-            <h2 class="text-[10px] font-black text-slate-400 tracking-[0.4em] uppercase flex items-center mb-6">
+            <h2 class="text-[10px] font-black text-slate-400 tracking-[0.4em] uppercase mb-6 flex items-center">
                 <span class="w-2 h-4 bg-slate-700 rounded-full mr-3"></span> 1. Medication Schedule
             </h2>
-
             <div class="space-y-4">
-                <div class="flex justify-between items-center">
-                    <span class="text-xl font-black text-slate-700 flex items-center">☀️ <span class="ml-2">早上給藥</span></span>
-                    <span id="prog-morning" class="text-xs font-black bg-slate-100 px-3 py-1 rounded-full text-slate-500">0/3</span>
-                </div>
+                <div class="flex justify-between items-center"><span class="text-xl font-black text-slate-700">☀️ 早上給藥</span><span id="prog-morning" class="text-xs font-black bg-slate-100 px-3 py-1 rounded-full text-slate-500">0/3</span></div>
                 <div class="grid grid-cols-3 gap-3">
-                    <button onclick="medToggle('早上-💊癲癇1')" id="box-m0" class="check-item">
-                        <span id="icon-m0" class="check-icon-empty">⬜</span>
-                        <span class="label-text">💊癲癇1</span>
-                        <span id="time-m0" class="time-text">--:--</span>
-                    </button>
-                    <button onclick="medToggle('早上-💊癲癇2')" id="box-m1" class="check-item">
-                        <span id="icon-m1" class="check-icon-empty">⬜</span>
-                        <span class="label-text">💊癲癇2</span>
-                        <span id="time-m1" class="time-text">--:--</span>
-                    </button>
-                    <button onclick="medToggle('早上-🌿中藥')" id="box-m2" class="check-item">
-                        <span id="icon-m2" class="check-icon-empty">⬜</span>
-                        <span class="label-text">🌿中藥</span>
-                        <span id="time-m2" class="time-text">--:--</span>
-                    </button>
+                    <button onclick="cloudToggle('早上-💊癲癇1')" id="box-m0" class="check-item"><span id="icon-m0" class="check-icon-empty">⬜</span><span class="label-text">💊癲癇1</span><span id="time-m0" class="time-text">--:--</span></button>
+                    <button onclick="cloudToggle('早上-💊癲癇2')" id="box-m1" class="check-item"><span id="icon-m1" class="check-icon-empty">⬜</span><span class="label-text">💊癲癇2</span><span id="time-m1" class="time-text">--:--</span></button>
+                    <button onclick="cloudToggle('早上-🌿中藥')" id="box-m2" class="check-item"><span id="icon-m2" class="check-icon-empty">⬜</span><span class="label-text">🌿中藥</span><span id="time-m2" class="time-text">--:--</span></button>
                 </div>
             </div>
-
-            <div class="h-8"></div> <div class="space-y-4 pt-6 border-t-2 border-slate-50">
-                <div class="flex justify-between items-center">
-                    <span class="text-xl font-black text-slate-700 flex items-center">🌙 <span class="ml-2">晚上給藥</span></span>
-                    <span id="prog-night" class="text-xs font-black bg-slate-100 px-3 py-1 rounded-full text-slate-500">0/4</span>
-                </div>
+            <div class="h-8"></div>
+            <div class="space-y-4 pt-6 border-t-2 border-slate-50">
+                <div class="flex justify-between items-center"><span class="text-xl font-black text-slate-700">🌙 晚上給藥</span><span id="prog-night" class="text-xs font-black bg-slate-100 px-3 py-1 rounded-full text-slate-500">0/4</span></div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <button onclick="medToggle('晚上-💊癲癇1')" id="box-n0" class="check-item">
-                        <span id="icon-n0" class="check-icon-empty">⬜</span>
-                        <span class="label-text">💊癲癇1</span>
-                        <span id="time-n0" class="time-text">--:--</span>
-                    </button>
-                    <button onclick="medToggle('晚上-💊癲癇2')" id="box-n1" class="check-item">
-                        <span id="icon-n1" class="check-icon-empty">⬜</span>
-                        <span class="label-text">💊癲癇2</span>
-                        <span id="time-n1" class="time-text">--:--</span>
-                    </button>
-                    <button onclick="medToggle('晚上-🌿中藥')" id="box-n2" class="check-item">
-                        <span id="icon-n2" class="check-icon-empty">⬜</span>
-                        <span class="label-text">🌿中藥</span>
-                        <span id="time-n2" class="time-text">--:--</span>
-                    </button>
-                    <button onclick="medToggle('晚上-🩸高血壓')" id="box-n3" class="check-item">
-                        <span id="icon-n3" class="check-icon-empty">⬜</span>
-                        <span class="label-text">🩸血壓</span>
-                        <span id="time-n3" class="time-text">--:--</span>
-                    </button>
+                    <button onclick="cloudToggle('晚上-💊癲癇1')" id="box-n0" class="check-item"><span id="icon-n0" class="check-icon-empty">⬜</span><span class="label-text">💊癲癇1</span><span id="time-n0" class="time-text">--:--</span></button>
+                    <button onclick="cloudToggle('晚上-💊癲癇2')" id="box-n1" class="check-item"><span id="icon-n1" class="check-icon-empty">⬜</span><span class="label-text">💊癲癇2</span><span id="time-n1" class="time-text">--:--</span></button>
+                    <button onclick="cloudToggle('晚上-🌿中藥')" id="box-n2" class="check-item"><span id="icon-n2" class="check-icon-empty">⬜</span><span class="label-text">🌿中藥</span><span id="time-n2" class="time-text">--:--</span></button>
+                    <button onclick="cloudToggle('晚上-🩸高血壓')" id="box-n3" class="check-item"><span id="icon-n3" class="check-icon-empty">⬜</span><span class="label-text">🩸血壓</span><span id="time-n3" class="time-text">--:--</span></button>
                 </div>
             </div>
         </div>
 
         <div class="slate-panel p-6 border-t-[10px] border-t-slate-400">
-            <h2 class="text-[10px] font-black text-slate-400 tracking-[0.4em] uppercase flex items-center mb-6">
+            <h2 class="text-[10px] font-black text-slate-400 tracking-[0.4em] uppercase mb-6 flex items-center">
                 <span class="w-2 h-4 bg-slate-400 rounded-full mr-3"></span> 2. Symptom Observation
             </h2>
             <div class="flex gap-2 mb-4">
-                <input type="date" id="symDate" class="flex-[3] p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-base font-bold text-slate-700 outline-none">
-                <input type="time" id="symTime" class="flex-[3] p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-base font-bold text-slate-700 outline-none">
+                <input type="date" id="symDate" class="flex-[3] p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold">
+                <input type="time" id="symTime" class="flex-[3] p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl font-bold">
                 <button onclick="resetInputTime()" class="flex-1 bg-slate-200 text-slate-600 rounded-2xl font-black text-[10px]">現在</button>
             </div>
             <div class="flex flex-wrap gap-2 mb-6">
                 <button onclick="addTag('✨ 精神好')" class="tag-btn">✨ 精神好</button>
-                <button onclick="addTag('💩 便祕')" class="tag-btn">💩 便祕</button>
+                <button onclick="addTag('💩 便便正常')" class="tag-btn">💩 便便正常</button>
                 <button onclick="addTag('🤮 嘔吐')" class="tag-btn">🤮 嘔吐</button>
                 <button onclick="addTag('🚨 癲癇發作')" class="px-4 py-2 rounded-xl bg-red-500 text-white font-black text-sm shadow-lg animate-pulse">🚨 癲癇發作</button>
             </div>
             <textarea id="noteInput" placeholder="描述細節..." class="w-full p-5 bg-slate-50 rounded-3xl text-lg mb-6 outline-none border-2 border-slate-100 h-32"></textarea>
-            <div class="flex gap-4">
-                <button onclick="clearSymptomInput()" class="flex-1 bg-slate-100 text-slate-400 py-5 rounded-2xl font-bold">清除</button>
-                <button onclick="saveSymptom()" class="flex-[3] bg-slate-800 text-white py-5 rounded-2xl font-black text-lg shadow-xl tracking-widest">儲存觀察</button>
-            </div>
+            <button onclick="cloudSaveSymptom()" class="w-full bg-slate-800 text-white py-5 rounded-2xl font-black text-lg shadow-xl tracking-widest">儲存觀察紀錄</button>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-20">
-            <div class="space-y-4">
-                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4">給藥歷史</h3>
-                <div id="medList" class="space-y-3"></div>
-            </div>
-            <div class="space-y-4">
-                <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4">症狀觀察</h3>
-                <div id="symptomList" class="space-y-3"></div>
-            </div>
+            <div class="space-y-4"><h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4">給藥歷史 (雲端)</h3><div id="medList" class="space-y-3"></div></div>
+            <div class="space-y-4"><h3 class="text-[10px] font-black text-slate-400 uppercase tracking-widest px-4">症狀觀察 (雲端)</h3><div id="symptomList" class="space-y-3"></div></div>
         </div>
     </div>
 
-    <script>
-        const M_MEDS = ['早上-💊癲癇1', '早上-💊癲癇2', '早上-🌿中藥'];
-        const N_MEDS = ['晚上-💊癲癇1', '晚上-💊癲癇2', '晚上-🌿中藥', '晚上-🩸高血壓'];
-        const STORAGE_KEY = 'catSlate_Final_V12';
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, deleteDoc, doc, where, getDocs, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        window.onload = () => { resetInputTime(); render(); setInterval(render, 30000); };
+        const SECRET = "0410";
+        const firebaseConfig = {
+            apiKey: "AIzaSyBqDlEv23EhZ-UnSgX9o2OHLUWuuy2eEuY",
+            authDomain: "mimihealth.firebaseapp.com",
+            databaseURL: "https://mimihealth-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "mimihealth",
+            storageBucket: "mimihealth.firebasestorage.app",
+            messagingSenderId: "314822263644",
+            appId: "1:314822263644:web:e12efe89b70c578a5c3799"
+        };
 
-        function resetInputTime() {
-            const now = new Date();
-            document.getElementById('symDate').value = now.toISOString().split('T')[0];
-            document.getElementById('symTime').value = now.toTimeString().substring(0, 5);
-        }
-
-        function clearSymptomInput() {
-            document.getElementById('noteInput').value = '';
-            resetInputTime();
-        }
-
-        function addTag(tag) {
-            const input = document.getElementById('noteInput');
-            input.value = input.value ? input.value + '、' + tag : tag;
-        }
-
-        function medToggle(name) {
-            const records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            const todayStr = new Date().toISOString().split('T')[0];
-            const exists = records.find(r => r.date === todayStr && r.content.includes(name));
-            if (!exists) {
-                saveToStorage({ id: Date.now(), date: todayStr, time: new Date().toTimeString().substring(0, 5), content: name + " (完成)", type: 'med' });
+        // 密碼驗證邏輯
+        window.verifyPass = () => {
+            const val = document.getElementById('passInput').value;
+            if (val === SECRET) {
+                localStorage.setItem('mimi_auth_v2', SECRET);
+                initSystem();
             } else {
-                alert("今日此項已完成。");
+                alert("密碼錯誤");
             }
+        };
+
+        const initSystem = () => {
+            document.getElementById('auth-overlay').classList.add('hidden');
+            document.getElementById('main-content').classList.remove('opacity-0');
+            
+            const app = initializeApp(firebaseConfig);
+            const db = getFirestore(app);
+            const recordsCol = collection(db, "cat_records");
+
+            // 即時監聽
+            const q = query(recordsCol, orderBy("timestamp", "desc"), limit(60));
+            onSnapshot(q, (snapshot) => {
+                const records = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+                renderUI(records);
+            });
+
+            // 暴露到全域
+            window.cloudToggle = async (name) => {
+                const today = new Date().toISOString().split('T')[0];
+                const qCheck = query(recordsCol, where("date", "==", today), where("content", "==", name + " (完成)"));
+                const check = await getDocs(qCheck);
+                if (!check.empty) return;
+
+                await addDoc(recordsCol, {
+                    date: today, time: new Date().toTimeString().substring(0, 5),
+                    content: name + " (完成)", type: 'med', timestamp: Date.now()
+                });
+            };
+
+            window.cloudSaveSymptom = async () => {
+                const content = document.getElementById('noteInput').value.trim();
+                if (!content) return;
+                await addDoc(recordsCol, {
+                    date: document.getElementById('symDate').value,
+                    time: document.getElementById('symTime').value,
+                    content, type: 'symptom', timestamp: Date.now()
+                });
+                document.getElementById('noteInput').value = '';
+            };
+
+            window.del = async (id) => {
+                if (confirm("確定刪除？")) await deleteDoc(doc(db, "cat_records", id));
+            };
+        };
+
+        // 檢查登入狀態
+        if (localStorage.getItem('mimi_auth_v2') === SECRET) {
+            initSystem();
+        } else {
+            document.getElementById('auth-overlay').classList.remove('hidden');
         }
 
-        function saveSymptom() {
-            const content = document.getElementById('noteInput').value.trim();
-            if (!content) return alert("請輸入內容");
-            saveToStorage({ id: Date.now(), date: document.getElementById('symDate').value, time: document.getElementById('symTime').value, content, type: 'symptom' });
-            document.getElementById('noteInput').value = '';
-            resetInputTime();
-        }
-
-        function saveToStorage(item) {
-            const records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            records.unshift(item);
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(records));
-            render();
-        }
-
-        function render() {
-            const records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            const todayStr = new Date().toISOString().split('T')[0];
-            document.getElementById('dateBanner').innerText = "Today: " + new Date().toLocaleDateString('zh-TW', {year:'numeric', month:'2-digit', day:'2-digit'});
-            const todayLogs = records.filter(r => r.date === todayStr);
+        // UI 渲染函式
+        function renderUI(records) {
+            const today = new Date().toISOString().split('T')[0];
+            document.getElementById('dateBanner').innerText = "Today: " + today;
+            const todayLogs = records.filter(r => r.date === today);
+            
+            const M_MEDS = ['早上-💊癲癇1', '早上-💊癲癇2', '早上-🌿中藥'];
+            const N_MEDS = ['晚上-💊癲癇1', '晚上-💊癲癇2', '晚上-🌿中藥', '晚上-🩸高血壓'];
 
             const updateGrid = (meds, prefix) => {
                 meds.forEach((name, i) => {
                     const log = todayLogs.find(r => r.content.includes(name));
                     const btn = document.getElementById(`box-${prefix}${i}`);
-                    const icon = document.getElementById(`icon-${prefix}${i}`);
-                    const timeDisp = document.getElementById(`time-${prefix}${i}`);
-                    if (log) { btn.classList.add('active'); icon.innerText = "✅"; timeDisp.innerText = log.time; }
-                    else { btn.classList.remove('active'); icon.innerText = "⬜"; timeDisp.innerText = "--:--"; }
+                    btn.classList.toggle('active', !!log);
+                    document.getElementById(`icon-${prefix}${i}`).innerText = log ? "✅" : "⬜";
+                    document.getElementById(`time-${prefix}${i}`).innerText = log ? log.time : "--:--";
                 });
             };
-
             updateGrid(M_MEDS, 'm');
             updateGrid(N_MEDS, 'n');
+
             document.getElementById('prog-morning').innerText = `${todayLogs.filter(r => M_MEDS.some(m => r.content.includes(m))).length}/3`;
             document.getElementById('prog-night').innerText = `${todayLogs.filter(r => N_MEDS.some(m => r.content.includes(m))).length}/4`;
+
+            const renderList = (data, border) => data.map(r => `
+                <div class="bg-white p-5 border-l-8 ${r.content.includes('🚨') ? 'border-red-500 bg-red-50/50' : border} shadow-sm rounded-r-3xl relative mb-3">
+                    <div class="flex justify-between items-center mb-1 text-[10px] font-black text-slate-300">
+                        <span>${r.date} ${r.time}</span>
+                        <button onclick="del('${r.id}')">✕</button>
+                    </div>
+                    <p class="text-slate-800 text-base font-bold">${r.content}</p>
+                </div>`).join('');
+
             document.getElementById('medList').innerHTML = renderList(records.filter(r => r.type === 'med'), 'border-slate-200');
             document.getElementById('symptomList').innerHTML = renderList(records.filter(r => r.type === 'symptom'), 'border-slate-400');
         }
 
-        function renderList(data, border) {
-            if (!data.length) return `<p class="text-[10px] text-slate-300 text-center py-8 italic uppercase">無紀錄</p>`;
-            return data.map(r => `
-                <div class="bg-white p-5 border-l-8 ${r.content.includes('🚨') ? 'border-red-500 bg-red-50/50' : border} shadow-sm rounded-r-3xl relative mb-3">
-                    <div class="flex justify-between items-center mb-2 text-[10px] font-black text-slate-300">
-                        <span>${r.date} · ${r.time}</span>
-                        <button onclick="del(${r.id})">✕</button>
-                    </div>
-                    <p class="text-slate-800 text-base font-bold">${r.content}</p>
-                </div>
-            `).join('');
-        }
-
-        function del(id) {
-            if(!confirm("確定要移除這筆紀錄嗎？")) return;
-            let r = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(r.filter(x => x.id !== id)));
-            render();
-        }
-
-        function exportToCSV() {
-            const records = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-            let csv = "\uFEFF日期,時間,內容\n";
-            records.forEach(r => csv += `${r.date},${r.time},"${r.content}"\n`);
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv;charset=utf-8;' }));
-            link.download = `咪咪紀錄.csv`;
-            link.click();
-        }
+        window.resetInputTime = () => {
+            const now = new Date();
+            document.getElementById('symDate').value = now.toISOString().split('T')[0];
+            document.getElementById('symTime').value = now.toTimeString().substring(0, 5);
+        };
+        window.addTag = (tag) => {
+            const input = document.getElementById('noteInput');
+            input.value = input.value ? input.value + '、' + tag : tag;
+        };
+        window.exportToCSV = () => alert("雲端數據請由資料庫後台匯出，或點擊歷史紀錄截圖保存。");
+        resetInputTime();
     </script>
 </body>
 </html>
