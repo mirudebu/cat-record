@@ -4,27 +4,39 @@
     <link rel="apple-touch-icon" href="icon.png">
     <link rel="icon" type="image/png" href="icon.png">
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>咪咪日誌</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap');
-        body { background-color: #f8fafc; font-family: 'Noto Sans TC', sans-serif; -webkit-tap-highlight-color: transparent; }
-        .slate-panel { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 32px; box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05); }
-        .check-item { @apply flex flex-col items-center justify-center py-6 rounded-3xl transition-all duration-300 border-2 border-slate-100 bg-white shadow-sm relative overflow-hidden; touch-action: manipulation; }
-        .check-icon-empty { @apply text-2xl opacity-10 mb-1 transition-all; }
-        .check-item.active { @apply bg-slate-800 border-slate-700 shadow-xl scale-[1.02]; }
+        :root {
+            --safe-top: env(safe-area-inset-top);
+            --safe-bottom: env(safe-area-inset-bottom);
+        }
+        body { 
+            background-color: #f8fafc; 
+            font-family: 'Noto Sans TC', sans-serif; 
+            -webkit-tap-highlight-color: transparent;
+            padding-top: var(--safe-top); /* 適應瀏海 */
+        }
+        .slate-panel { background: #ffffff; border: 1px solid #e2e8f0; border-radius: 28px; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.04); }
+        .check-item { 
+            @apply flex flex-col items-center justify-center py-4 rounded-[22px] transition-all duration-300 border-2 border-slate-50 bg-white shadow-sm relative overflow-hidden; 
+            aspect-ratio: 1 / 1; /* 強制正方形更像 App 按鈕 */
+            touch-action: manipulation; 
+        }
+        .check-icon-empty { @apply text-xl opacity-20 mb-1 transition-all; }
+        .check-item.active { @apply bg-slate-800 border-slate-700 shadow-lg scale-[0.96]; }
         .check-item.active .label-text { @apply text-white !important; }
         .check-item.active .time-text { @apply text-slate-400 !important; }
-        .check-item.active .check-icon-empty { @apply scale-150 opacity-100; }
-        .check-item:active { transform: scale(0.95); }
-        .label-text { font-size: 1.1rem; font-weight: 800; color: #334155; transition: color 0.3s; white-space: nowrap; }
-        .time-text { font-size: 0.75rem; font-weight: 600; color: #94a3b8; transition: color 0.3s; }
-        .tag-btn { @apply px-4 py-2 rounded-xl bg-white text-slate-700 font-bold text-sm border-2 border-slate-200 active:translate-y-0.5 active:border-slate-400 transition-all; }
-        .section-title { @apply text-2xl font-black text-slate-800 tracking-tight flex items-center mb-4 px-2; }
-        .observation-panel { background: #e2e8f0; border: 2px solid #cbd5e1; }
-        /* 登入遮罩樣式 */
-        #auth-overlay { position: fixed; inset: 0; background: #f8fafc; z-index: 9999; display: flex; align-items: center; justify-content: center; transition: opacity 0.5s; }
+        .check-item.active .check-icon-empty { @apply scale-125 opacity-100; }
+        .check-item:active { transform: scale(0.92); }
+        .label-text { font-size: 0.9rem; font-weight: 800; color: #334155; white-space: nowrap; }
+        .time-text { font-size: 0.65rem; font-weight: 600; color: #94a3b8; }
+        .tag-btn { @apply px-3 py-1.5 rounded-xl bg-white text-slate-700 font-bold text-xs border-2 border-slate-100 active:bg-slate-50 transition-all; }
+        .section-title { @apply text-xl font-black text-slate-800 tracking-tight flex items-center mb-4 px-1; }
+        .observation-panel { background: #e2e8f0; border: none; }
+        #auth-overlay { position: fixed; inset: 0; background: #f8fafc; z-index: 9999; display: flex; align-items: center; justify-content: center; }
     </style>
 </head>
 <body class="p-4 pb-24 text-slate-800">
@@ -32,90 +44,88 @@
     <div id="auth-overlay">
         <div class="text-center p-8 bg-white rounded-[40px] shadow-2xl border border-slate-200 max-w-xs w-full mx-4">
             <div class="text-5xl mb-6">🔒</div>
-            <h2 class="text-2xl font-black text-slate-800 mb-6 tracking-tight">請輸入密碼</h2>
+            <h2 class="text-xl font-black text-slate-800 mb-6 tracking-tight">請輸入密碼</h2>
             <input type="password" id="passInput" pattern="\d*" inputmode="numeric" placeholder="••••" 
                 class="w-full text-center text-3xl tracking-[0.5em] p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl mb-6 outline-none focus:border-slate-800 transition-all">
-            <button onclick="verifyPass()" class="w-full bg-slate-800 text-white py-5 rounded-2xl font-black tracking-widest active:scale-95 transition-all text-lg">進入系統</button>
+            <button onclick="verifyPass()" class="w-full bg-slate-800 text-white py-4 rounded-2xl font-black tracking-widest active:scale-95 transition-all text-lg shadow-lg">進入系統</button>
         </div>
     </div>
 
-    <div id="main-content" class="max-w-2xl mx-auto space-y-10 opacity-0 transition-opacity duration-700 pointer-events-none">
+    <div id="main-content" class="max-w-md mx-auto space-y-8 opacity-0 transition-opacity duration-700 pointer-events-none">
         
-        <div class="flex justify-between items-center px-2">
+        <div class="flex justify-between items-end px-1">
             <div>
-                <h1 class="text-3xl font-black text-slate-800 tracking-tighter">🐾 咪咪健康紀錄</h1>
-                <p id="dateBanner" class="text-xs text-slate-400 font-bold tracking-[0.2em] mt-1 uppercase"></p>
+                <h1 class="text-2xl font-black text-slate-800 tracking-tighter italic">MIMI HEALTH</h1>
+                <p id="dateBanner" class="text-[10px] text-slate-400 font-bold tracking-[0.2em] mt-1 uppercase"></p>
             </div>
-            <button onclick="exportToCSV()" class="bg-slate-800 text-white px-5 py-3 rounded-2xl shadow-lg font-black text-xs tracking-widest">匯出 CSV</button>
+            <button onclick="exportToCSV()" class="bg-slate-200 text-slate-600 px-4 py-2 rounded-xl font-black text-[10px] tracking-widest">CSV</button>
         </div>
 
         <section>
-            
-            <div class="slate-panel p-6 border-t-[10px] border-t-slate-700">
-                <h2 class="text-[10px] font-black text-slate-400 tracking-[0.4em] uppercase mb-6 flex items-center">
-                <span class="w-2 h-4 bg-slate-700 rounded-full mr-3"></span> Medication Schedule
-              </h2>
+            <div class="slate-panel p-5 border-t-[8px] border-t-slate-700">
+                <h2 class="text-[9px] font-black text-slate-400 tracking-[0.3em] uppercase mb-5 flex items-center">
+                    <span class="w-1.5 h-3 bg-slate-700 rounded-full mr-2"></span> Medication
+                </h2>
                 <div class="space-y-4">
-                    <div class="flex justify-between items-center">
-                        <span class="text-xl font-black text-slate-700">☀️ 早上給藥</span>
-                        <span id="prog-morning" class="text-xs font-black bg-slate-100 px-3 py-1 rounded-full text-slate-500">0/3</span>
+                    <div class="flex justify-between items-center px-1">
+                        <span class="text-lg font-black text-slate-700">☀️ 早上給藥</span>
+                        <span id="prog-morning" class="text-[10px] font-black bg-slate-100 px-2 py-0.5 rounded-full text-slate-500">0/3</span>
                     </div>
-                    <div class="grid grid-cols-3 gap-3">
-                        <button onclick="cloudToggle('早上-💊癲癇1')" id="box-m0" class="check-item"><span id="icon-m0" class="check-icon-empty">⬜</span><span class="label-text">💊癲癇1</span><span id="time-m0" class="time-text">--:--</span></button>
-                        <button onclick="cloudToggle('早上-💊癲癇2')" id="box-m1" class="check-item"><span id="icon-m1" class="check-icon-empty">⬜</span><span class="label-text">💊癲癇2</span><span id="time-m1" class="time-text">--:--</span></button>
-                        <button onclick="cloudToggle('早上-🌿中藥')" id="box-m2" class="check-item"><span id="icon-m2" class="check-icon-empty">⬜</span><span class="label-text">🌿中藥</span><span id="time-m2" class="time-text">--:--</span></button>
+                    <div class="grid grid-cols-3 gap-2.5">
+                        <button onclick="cloudToggle('早上-💊1')" id="box-m0" class="check-item"><span id="icon-m0" class="check-icon-empty">⬜</span><span class="label-text">💊癲癇1</span><span id="time-m0" class="time-text">--:--</span></button>
+                        <button onclick="cloudToggle('早上-💊2')" id="box-m1" class="check-item"><span id="icon-m1" class="check-icon-empty">⬜</span><span class="label-text">💊癲癇2</span><span id="time-m1" class="time-text">--:--</span></button>
+                        <button onclick="cloudToggle('早上-🌿')" id="box-m2" class="check-item"><span id="icon-m2" class="check-icon-empty">⬜</span><span class="label-text">🌿中藥</span><span id="time-m2" class="time-text">--:--</span></button>
                     </div>
                 </div>
-                <div class="h-8"></div>
-                <div class="space-y-4 pt-6 border-t-2 border-slate-50">
-                    <div class="flex justify-between items-center">
-                        <span class="text-xl font-black text-slate-700">🌙 晚上給藥</span>
-                        <span id="prog-night" class="text-xs font-black bg-slate-100 px-3 py-1 rounded-full text-slate-500">0/4</span>
+                <div class="h-6"></div>
+                <div class="space-y-4 pt-5 border-t border-slate-100">
+                    <div class="flex justify-between items-center px-1">
+                        <span class="text-lg font-black text-slate-700">🌙 晚上給藥</span>
+                        <span id="prog-night" class="text-[10px] font-black bg-slate-100 px-2 py-0.5 rounded-full text-slate-500">0/4</span>
                     </div>
-                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                        <button onclick="cloudToggle('晚上-💊癲癇1')" id="box-n0" class="check-item"><span id="icon-n0" class="check-icon-empty">⬜</span><span class="label-text">💊癲癇1</span><span id="time-n0" class="time-text">--:--</span></button>
-                        <button onclick="cloudToggle('晚上-💊癲癇2')" id="box-n1" class="check-item"><span id="icon-n1" class="check-icon-empty">⬜</span><span class="label-text">💊癲癇2</span><span id="time-n1" class="time-text">--:--</span></button>
-                        <button onclick="cloudToggle('晚上-🌿中藥')" id="box-n2" class="check-item"><span id="icon-n2" class="check-icon-empty">⬜</span><span class="label-text">🌿中藥</span><span id="time-n2" class="time-text">--:--</span></button>
-                        <button onclick="cloudToggle('晚上-🩸高血壓')" id="box-n3" class="check-item"><span id="icon-n3" class="check-icon-empty">⬜</span><span class="label-text">🩸血壓</span><span id="time-n3" class="time-text">--:--</span></button>
+                    <div class="grid grid-cols-4 gap-2">
+                        <button onclick="cloudToggle('晚上-💊1')" id="box-n0" class="check-item"><span id="icon-n0" class="check-icon-empty text-base">⬜</span><span class="label-text text-[0.75rem]">💊1</span><span id="time-n0" class="time-text text-[0.6rem]">--:--</span></button>
+                        <button onclick="cloudToggle('晚上-💊2')" id="box-n1" class="check-item"><span id="icon-n1" class="check-icon-empty text-base">⬜</span><span class="label-text text-[0.75rem]">💊2</span><span id="time-n1" class="time-text text-[0.6rem]">--:--</span></button>
+                        <button onclick="cloudToggle('晚上-🌿')" id="box-n2" class="check-item"><span id="icon-n2" class="check-icon-empty text-base">⬜</span><span class="label-text text-[0.75rem]">🌿</span><span id="time-n2" class="time-text text-[0.6rem]">--:--</span></button>
+                        <button onclick="cloudToggle('晚上-🩸')" id="box-n3" class="check-item"><span id="icon-n3" class="check-icon-empty text-base">⬜</span><span class="label-text text-[0.75rem]">🩸</span><span id="time-n3" class="time-text text-[0.6rem]">--:--</span></button>
                     </div>
                 </div>
             </div>
         </section>
 
         <section>
- 
-            <div class="slate-panel p-6 border-t-[10px] border-t-slate-500 observation-panel">
-                <h2 class="text-[10px] font-black text-slate-500 tracking-[0.4em] uppercase mb-6 flex items-center">
-                <span class="w-2 h-4 bg-slate-500 rounded-full mr-3"></span> Symptom Observation
-               </h2>
-                <div class="flex gap-2 mb-4">
-                    <input type="date" id="symDate" class="flex-[3] p-4 bg-white border-2 border-slate-300 rounded-2xl font-bold focus:border-slate-800 outline-none">
-                    <input type="time" id="symTime" class="flex-[3] p-4 bg-white border-2 border-slate-300 rounded-2xl font-bold focus:border-slate-800 outline-none">
-                    <button onclick="resetInputTime()" class="flex-1 bg-slate-800 text-white rounded-2xl font-black text-[10px] active:scale-95 transition-all">現在</button>
+            <div class="slate-panel p-5 observation-panel">
+                <h2 class="text-[9px] font-black text-slate-500 tracking-[0.3em] uppercase mb-5 flex items-center">
+                    <span class="w-1.5 h-3 bg-slate-500 rounded-full mr-2"></span> Observation
+                </h2>
+                <div class="flex gap-2 mb-3">
+                    <input type="date" id="symDate" class="flex-[3] p-3 bg-white rounded-xl font-bold text-sm focus:ring-2 ring-slate-400 outline-none transition-all">
+                    <input type="time" id="symTime" class="flex-[3] p-3 bg-white rounded-xl font-bold text-sm focus:ring-2 ring-slate-400 outline-none transition-all">
+                    <button onclick="resetInputTime()" class="flex-1 bg-slate-800 text-white rounded-xl font-black text-[9px]">現在</button>
                 </div>
-                <div class="flex flex-wrap gap-2 mb-6">
+                <div class="flex flex-wrap gap-1.5 mb-4">
                     <button onclick="addTag('✨ 精神好')" class="tag-btn">✨ 精神好</button>
-                    <button onclick="addTag('💩 便便正常')" class="tag-btn">💩 便便正常</button>
+                    <button onclick="addTag('💩 便便正常')" class="tag-btn">💩 便便</button>
                     <button onclick="addTag('🤮 嘔吐')" class="tag-btn">🤮 嘔吐</button>
-                    <button onclick="addTag('🚨 癲癇發作')" class="px-4 py-2 rounded-xl bg-red-600 text-white font-black text-sm shadow-md animate-pulse">🚨 癲癇發作</button>
+                    <button onclick="addTag('🚨 癲癇發作')" class="px-3 py-1.5 rounded-xl bg-red-600 text-white font-black text-xs animate-pulse">🚨 發作</button>
                 </div>
-                <textarea id="noteInput" placeholder="描述細節..." class="w-full p-5 bg-slate-100 rounded-3xl text-lg mb-4 outline-none border-2 border-slate-300 h-32 focus:bg-white focus:border-slate-800 transition-all placeholder:text-slate-400"></textarea>
-                <div class="flex gap-3">
-                    <button onclick="clearInput()" class="flex-1 bg-slate-400 text-white py-5 rounded-2xl font-black text-lg shadow-sm active:scale-95 transition-all">清除</button>
-                    <button onclick="cloudSaveSymptom()" class="flex-[2] bg-slate-800 text-white py-5 rounded-2xl font-black text-lg shadow-xl tracking-widest active:scale-95 transition-all">儲存紀錄</button>
+                <textarea id="noteInput" placeholder="描述細節..." class="w-full p-4 bg-white/60 rounded-2xl text-base mb-4 outline-none border-2 border-transparent focus:border-slate-400 h-24 transition-all placeholder:text-slate-400"></textarea>
+                <div class="flex gap-2">
+                    <button onclick="clearInput()" class="flex-1 bg-slate-400 text-white py-4 rounded-2xl font-black active:scale-95 transition-all shadow-md">清除</button>
+                    <button onclick="cloudSaveSymptom()" class="flex-[2] bg-slate-800 text-white py-4 rounded-2xl font-black shadow-lg active:scale-95 transition-all">儲存紀錄</button>
                 </div>
             </div>
         </section>
 
-        <hr class="border-slate-200">
+        <hr class="border-slate-200 mx-2">
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-10 pb-20">
+        <div class="space-y-10 pb-20">
             <section>
-                <h2 class="section-title text-slate-600">📖 給藥歷史 (雲端)</h2>
+                <h2 class="section-title text-slate-600 text-lg">📖 給藥歷史</h2>
                 <div id="medList" class="space-y-3 px-1"></div>
             </section>
             <section>
-                <h2 class="section-title text-slate-600">📝 症狀觀察 (雲端)</h2>
+                <h2 class="section-title text-slate-600 text-lg">📝 症狀觀察</h2>
                 <div id="symptomList" class="space-y-3 px-1"></div>
             </section>
         </div>
@@ -125,9 +135,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getFirestore, collection, addDoc, query, orderBy, onSnapshot, deleteDoc, doc, where, getDocs, limit } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-        // 設定密碼
         const SECRET = "0410";
-
         const firebaseConfig = {
           apiKey: "AIzaSyB1ZbRISZunnzBapdMk-VZiYbq2PFIU7Vw",
           authDomain: "mimi-healthy.firebaseapp.com",
@@ -138,7 +146,6 @@
           measurementId: "G-V0T6833N71"
         };
 
-        // 驗證邏輯
         window.verifyPass = () => {
             const val = document.getElementById('passInput').value;
             if (val === SECRET) {
@@ -150,7 +157,6 @@
             }
         };
 
-        // 啟動主系統
         function startApp() {
             document.getElementById('auth-overlay').style.display = 'none';
             const main = document.getElementById('main-content');
@@ -160,16 +166,12 @@
             const db = getFirestore(app);
             const recordsCol = collection(db, "cat_records");
 
-            // 實時監聽
             const q = query(recordsCol, orderBy("timestamp", "desc"), limit(60));
             onSnapshot(q, (snapshot) => {
                 const records = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
                 renderUI(records, db, recordsCol);
-            }, (error) => {
-                if(error.code === 'permission-denied') alert("Firebase 規則權限不足！");
             });
 
-            // 綁定全域函式
             window.cloudToggle = async (name) => {
                 const today = new Date().toISOString().split('T')[0];
                 const qCheck = query(recordsCol, where("date", "==", today), where("content", "==", name + " (完成)"));
@@ -201,19 +203,15 @@
             };
         }
 
-        // 自動登入檢查
-        if (localStorage.getItem('mimi_auth_v3') === SECRET) {
-            startApp();
-        }
+        if (localStorage.getItem('mimi_auth_v3') === SECRET) { startApp(); }
 
-        // 渲染 UI
         function renderUI(records) {
             const today = new Date().toISOString().split('T')[0];
-            document.getElementById('dateBanner').innerText = "Update: OK | Today: " + today;
+            document.getElementById('dateBanner').innerText = "Today: " + today;
             const todayLogs = records.filter(r => r.date === today);
             
-            const M_MEDS = ['早上-💊癲癇1', '早上-💊癲癇2', '早上-🌿中藥'];
-            const N_MEDS = ['晚上-💊癲癇1', '晚上-💊癲癇2', '晚上-🌿中藥', '晚上-🩸高血壓'];
+            const M_MEDS = ['早上-💊1', '早上-💊2', '早上-🌿'];
+            const N_MEDS = ['晚上-💊1', '晚上-💊2', '晚上-🌿', '晚上-🩸'];
 
             const updateGrid = (meds, prefix) => {
                 meds.forEach((name, i) => {
@@ -233,12 +231,12 @@
             document.getElementById('prog-night').innerText = `${todayLogs.filter(r => N_MEDS.some(m => r.content.includes(m))).length}/4`;
 
             const renderList = (data, border) => data.map(r => `
-                <div class="bg-white p-5 border-l-8 ${r.content.includes('🚨') ? 'border-red-500 bg-red-50' : border} shadow-sm rounded-r-3xl relative mb-3">
-                    <div class="flex justify-between items-center mb-1 text-[10px] font-black text-slate-300">
+                <div class="bg-white p-4 border-l-[6px] ${r.content.includes('🚨') ? 'border-red-500 bg-red-50' : border} shadow-sm rounded-r-2xl relative mb-3">
+                    <div class="flex justify-between items-center mb-1 text-[9px] font-black text-slate-300">
                         <span>${r.date} ${r.time}</span>
                         <button onclick="del('${r.id}')" class="px-2">✕</button>
                     </div>
-                    <p class="text-slate-800 text-base font-bold leading-relaxed">${r.content}</p>
+                    <p class="text-slate-700 text-sm font-bold leading-relaxed">${r.content}</p>
                 </div>`).join('');
 
             document.getElementById('medList').innerHTML = renderList(records.filter(r => r.type === 'med'), 'border-slate-300');
@@ -260,6 +258,3 @@
     </script>
 </body>
 </html>
-
-
-
